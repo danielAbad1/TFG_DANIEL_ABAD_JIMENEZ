@@ -1,0 +1,59 @@
+<div class="wrapper-centrado">
+  <div class="detalles-grupo-container">
+    <ng-container *ngIf="grupoDetalles$ | async as grupoDetalles; else noData">
+      <h2>
+        <fa-icon [icon]="['fas', 'arrow-left']" (click)="navigateBack()" class="back-arrow"></fa-icon>
+        <fa-icon [icon]="['fas', 'home']" (click)="goHome()" class="home-icon"></fa-icon>
+        {{ grupoDetalles.length > 0 ? grupoDetalles[0].name.value : 'Detalles del Grupo de Investigación' }}
+      </h2>
+
+      <div *ngIf="grupoDetalles.length > 0" class="grupo-card">
+        <p *ngIf="grupoDetalles[0]?.coordinadorNombre">
+          <strong>Coordinador:</strong>
+
+          <a class="coordinator-link clickable-person"
+            (click)="verDetallesInvestigador(grupoDetalles[0].coordinadorNombre!.value)">
+            {{ grupoDetalles[0].coordinadorNombre!.value }}
+          </a>
+
+
+        <p *ngIf="grupoDetalles[0]?.coordinador">
+          <strong>Perfil del coordinador: </strong>
+          <a [href]="grupoDetalles[0].coordinador?.value" target="_blank">{{ grupoDetalles[0].coordinador?.value }}</a>
+        </p>
+
+        <p *ngIf="grupoDetalles[0]?.centroNombre || grupoDetalles[0]?.departamentoNombre">
+          <strong>Sede Principal:</strong>
+          {{ grupoDetalles[0].departamentoNombre?.value || 'Departamento no especificado' }} -
+          {{ grupoDetalles[0].centroNombre?.value || 'Centro no especificado' }},
+          {{ grupoDetalles[0].campusCentro?.value || 'Campus no especificado' }}
+        </p>
+
+        <div class="lineas-investigacion">
+          <h3 class="lineas-titulo">Líneas de Investigación</h3>
+          <ul>
+            <li *ngFor="let linea of grupoDetalles">
+              <p *ngIf="linea.title"><strong>Línea de investigación:</strong> {{ linea.title.value }}</p>
+              <p><strong>Más información: </strong> <a [href]="linea.lineaInvestigacion?.value" target="_blank">{{
+                  linea.lineaInvestigacion?.value }}</a></p>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </ng-container>
+
+    <ng-template #noData>
+      <div *ngIf="errorMessage" class="error-message">
+        <p>{{ errorMessage }}</p>
+      </div>
+      <div *ngIf="!errorMessage && !isLoading" class="no-data-message">
+        <p>No se encontraron detalles para este grupo de investigación.</p>
+      </div>
+
+      <div *ngIf="isLoading" class="loading-message">
+        <fa-icon [icon]="['fas', 'spinner']" class="fa-spin text-primary"></fa-icon>
+        <p>Cargando detalles del grupo de investigación...</p>
+      </div>
+    </ng-template>
+  </div>
+</div>

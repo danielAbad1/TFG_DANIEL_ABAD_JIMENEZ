@@ -1,0 +1,127 @@
+.header-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 15px;
+  padding: 0.5rem 1rem;
+  background-color: #ffffff;
+  border-bottom: 2px solid #e2e6ea;
+  position: relative;
+}
+
+.header-container .icon-group {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.header-container fa-icon {
+  font-size: 1.25rem;
+  cursor: pointer;
+  color: #343a40;
+  transition: color 0.2s ease;
+}
+
+.header-container fa-icon:hover {
+  color: #007bff;
+}
+
+.header-container h2 {
+  flex-grow: 1;
+  text-align: center;
+  font-size: 1.5rem;
+  color: #343a40;
+  margin: 0;
+}
+
+.indice-h-button {
+  background-color: #007bff;
+  border: none;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 0.25rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.indice-h-button:hover {
+  background-color: #0056b3;
+}
+
+.table-container {
+  width: 80%;
+  margin: 40px auto;
+  background-color: #f8f9fa;
+  padding: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+}
+
+.search-input {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 14px;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  text-align: left;
+  padding: 12px;
+  border-bottom: 1px solid #dee2e6;
+}
+
+th {
+  background-color: #e9ecef;
+  color: #495057;
+}
+
+tbody tr:hover {
+  background-color: #f1f3f5;
+}
+
+.pagination {
+  margin-top: 20px;
+  display: flex;
+  justify-content: space-between;
+}
+
+button {
+  padding: 10px 20px;
+  border: none;
+  background-color: #007bff;
+  color: white;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+button[disabled] {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+.loading-listadoInvestigadores {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 2rem 0;
+  font-size: 1.2rem;
+  color: #555;
+}
+
+.spinner-icon {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+}

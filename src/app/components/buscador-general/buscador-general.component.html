@@ -1,0 +1,175 @@
+<div class="buscador-general-container">
+    <h2 style="text-align: center; position: relative;">
+        <fa-icon [icon]="['fas', 'arrow-left']" (click)="navigateBack()" class="back-arrow"></fa-icon>
+        <fa-icon [icon]="['fas', 'home']" (click)="goHome()" class="home-icon"></fa-icon>
+        Buscador General
+    </h2>
+
+    <div class="buscador-input-container">
+        <input type="text" [(ngModel)]="terminoBusqueda" (input)="onTerminoCambio($any($event.target).value)"
+            placeholder="Buscar investigadores, grupos, proyectos o publicaciones..." />
+
+        <button *ngIf="terminoBusqueda.trim()" class="reset-button" (click)="resetBusqueda()" title="Limpiar búsqueda">
+            <fa-icon [icon]="['fas', 'xmark']"
+                [ngClass]="{ 'icono-reset': true, 'activo': terminoBusqueda.length > 0 }"></fa-icon>
+        </button>
+    </div>
+
+    <div class="mensaje-inicial" *ngIf="!terminoBusqueda.trim()">
+        <fa-icon [icon]="['fas', 'info-circle']" class="icono-info"></fa-icon>
+        <p>
+            <em>
+                Introduce un término para buscar investigadores, grupos, proyectos o publicaciones relacionados con la
+                Escuela Politécnica.
+            </em>
+        </p>
+    </div>
+
+    <div class="loading-message" *ngIf="isLoading">
+        <div class="spinner-container">
+            <fa-icon [icon]="['fas', 'spinner']" class="fa-spin text-primary"></fa-icon>
+            <p>Cargando resultados…</p>
+        </div>
+    </div>
+
+    <div class="resultados-container" *ngIf="!isLoading && terminoBusqueda.trim()">
+        <!-- Mostrar secciones solo si hay algún resultado -->
+        <ng-container *ngIf="!todosVacios; else sinResultadosGlobal">
+            <!-- Investigadores -->
+            <div class="bloque-resultados">
+                <h3>
+                    Investigadores
+                    <span class="contador" *ngIf="resultados.investigadores.length > 0">
+                        ({{ resultados.investigadores.length }})
+                    </span>
+                </h3>
+                <ng-container *ngIf="resultados.investigadores.length > 0; else sinInvestigadores">
+                    <ul>
+                        <li *ngFor="let investigador of paginados.investigadores; trackBy: trackByNombre"
+                            (click)="verDetallesInvestigador(investigador.nombre)" class="clickable-result">
+                            <strong>{{ investigador.nombre }}</strong>
+                            <br />
+                            <small *ngIf="investigador.grupo">Grupo: {{ investigador.grupo }}</small>
+                            <small *ngIf="investigador.areas"> | Áreas: {{ investigador.areas }}</small>
+                            <small *ngIf="investigador.scopusId"> | Scopus ID: {{ investigador.scopusId }}</small>
+                            <small *ngIf="investigador.orcidId"> | Orcid ID: {{ investigador.orcidId }}</small>
+                            <small *ngIf="investigador.dialnetId"> | Dialnet ID: {{ investigador.dialnetId }}</small>
+                        </li>
+                    </ul>
+                    <div class="paginacion">
+                        <button (click)="paginate('investigadores', 'previous')"
+                            [disabled]="offset.investigadores === 0">Anterior</button>
+                        <button (click)="paginate('investigadores', 'next')"
+                            [disabled]="offset.investigadores + limit >= resultados.investigadores.length">Siguiente</button>
+                    </div>
+                </ng-container>
+                <ng-template #sinInvestigadores>
+                    <div class="sin-resultados">No se encontraron investigadores para esta búsqueda.</div>
+                </ng-template>
+            </div>
+
+            <!-- Grupos -->
+            <div class="bloque-resultados">
+                <h3>
+                    Grupos de Investigación
+                    <span class="contador" *ngIf="resultados.grupos.length > 0">
+                        ({{ resultados.grupos.length }})
+                    </span>
+                </h3>
+                <ng-container *ngIf="resultados.grupos.length > 0; else sinGrupos">
+                    <ul>
+                        <li *ngFor="let grupo of paginados.grupos" (click)="verDetallesGrupo(grupo.nombre)"
+                            class="clickable-result">
+                            <strong>{{ grupo.nombre }}</strong>
+                            <br />
+                            <small *ngIf="!grupo.nombre.toLowerCase().includes(terminoBusqueda.toLowerCase())">
+                                Investigadores: {{ grupo.investigadores.join(', ') }}
+                            </small>
+                        </li>
+                    </ul>
+                    <div class="paginacion">
+                        <button (click)="paginate('grupos', 'previous')"
+                            [disabled]="offset.grupos === 0">Anterior</button>
+                        <button (click)="paginate('grupos', 'next')"
+                            [disabled]="offset.grupos + limit >= resultados.grupos.length">Siguiente</button>
+                    </div>
+                </ng-container>
+                <ng-template #sinGrupos>
+                    <div class="sin-resultados">No se encontraron grupos de investigación para esta búsqueda.</div>
+                </ng-template>
+            </div>
+
+            <!-- Proyectos -->
+            <div class="bloque-resultados">
+                <h3>
+                    Proyectos de Investigación
+                    <span class="contador" *ngIf="resultados.proyectos.length > 0">
+                        ({{ resultados.proyectos.length }})
+                    </span>
+                </h3>
+                <ng-container *ngIf="resultados.proyectos.length > 0; else sinProyectos">
+                    <ul>
+                        <li *ngFor="let proyecto of paginados.proyectos" (click)="verDetallesProyecto(proyecto.id)"
+                            class="clickable-result">
+                            <strong>{{ proyecto.nombre }}</strong>
+                            <br />
+                            <small *ngIf="proyecto.id">ID: {{ proyecto.id }}</small>
+                            <small *ngIf="proyecto.subvencion"> | Subvención: {{ proyecto.subvencion }} €</small>
+                            <small *ngIf="proyecto.ambito"> | Ámbito: {{ proyecto.ambito }}</small>
+                            <small *ngIf="proyecto.tipo"> | Tipo: {{ proyecto.tipo }}</small>
+                        </li>
+                    </ul>
+                    <div class="paginacion">
+                        <button (click)="paginate('proyectos', 'previous')"
+                            [disabled]="offset.proyectos === 0">Anterior</button>
+                        <button (click)="paginate('proyectos', 'next')"
+                            [disabled]="offset.proyectos + limit >= resultados.proyectos.length">Siguiente</button>
+                    </div>
+                </ng-container>
+                <ng-template #sinProyectos>
+                    <div class="sin-resultados">No se encontraron proyectos de investigación para esta búsqueda.</div>
+                </ng-template>
+            </div>
+
+            <!-- Publicaciones -->
+            <div class="bloque-resultados">
+                <h3>
+                    Publicaciones
+                    <span class="contador" *ngIf="resultados.publicaciones.length > 0">
+                        ({{ resultados.publicaciones.length }})
+                    </span>
+                </h3>
+                <ng-container *ngIf="resultados.publicaciones.length > 0; else sinPublicaciones">
+                    <ul>
+                        <li *ngFor="let publicacion of paginados.publicaciones"
+                            (click)="verDetallesPublicacion(publicacion.titulo)" class="clickable-result">
+                            <strong>{{ publicacion.titulo }}</strong>
+                            <br />
+                            <small *ngIf="publicacion.eid">ID: {{ publicacion.eid }}</small>
+                            <small *ngIf="publicacion.isbn"> | ISBN: {{ publicacion.isbn }}</small>
+                            <small *ngIf="publicacion.eissn"> | eISSN: {{ publicacion.eissn }}</small>
+                            <small *ngIf="publicacion.year"> | Año: {{ publicacion.year }}</small>
+                            <small *ngIf="publicacion.tipo"> | Tipo: {{ publicacion.tipo }}</small>
+                            <small *ngIf="publicacion.editorial"> | Editorial: {{ publicacion.editorial }}</small>
+                        </li>
+                    </ul>
+                    <div class="paginacion">
+                        <button (click)="paginate('publicaciones', 'previous')"
+                            [disabled]="offset.publicaciones === 0">Anterior</button>
+                        <button (click)="paginate('publicaciones', 'next')"
+                            [disabled]="offset.publicaciones + limit >= resultados.publicaciones.length">Siguiente</button>
+                    </div>
+                </ng-container>
+                <ng-template #sinPublicaciones>
+                    <div class="sin-resultados">No se encontraron publicaciones para esta búsqueda.</div>
+                </ng-template>
+            </div>
+        </ng-container>
+
+        <ng-template #sinResultadosGlobal>
+            <div class="sin-resultados">
+                No se encontraron resultados para la búsqueda actual.
+            </div>
+        </ng-template>
+    </div>
+</div>

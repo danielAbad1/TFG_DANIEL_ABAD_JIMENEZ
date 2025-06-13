@@ -1,0 +1,73 @@
+<div class="card-container">
+  <div class="header-container">
+    <fa-icon [icon]="['fas', 'arrow-left']" (click)="navigateBack()" class="back-arrow"></fa-icon>
+    <fa-icon [icon]="['fas', 'home']" (click)="goHome()" class="home-icon"></fa-icon>
+    <h2>Grupos de Investigación Escuela Politécnica</h2>
+  </div>
+
+  <div class="filtro-container">
+    <input type="text" (input)="actualizarFiltroGrupo($event)" placeholder="Buscar por nombre del grupo" />
+    <input type="text" (input)="actualizarFiltroInvestigador($event)"
+      placeholder="Buscar por nombre del investigador" />
+  </div>
+
+  <div *ngIf="!isLoading && !errorMessage; else loadingOrError">
+    <div class="table-container">
+      <div *ngFor="let grupo of gruposPaginados" class="card">
+        <div class="card-header grupo-expandible" [ngClass]="{ 'expandido': grupoExpandido === grupo.grupo }"
+          (click)="toggleGrupo(grupo.grupo)">
+          <h3>{{ grupo.grupo }}</h3>
+          <fa-icon [icon]="'chevron-down'"></fa-icon>
+        </div>
+
+        <div *ngIf="grupoExpandido === grupo.grupo" class="card-body">
+          <!-- Miembros de la Escuela Politécnica -->
+          <div *ngIf="grupo.personasEscuela.length > 0" class="card-field">
+            <span class="field-label">Miembros de la Escuela Politécnica:</span>
+            <ul class="miembros-container">
+              <li *ngFor="let persona of grupo.personasEscuela; trackBy: trackByPersona">
+                <a (click)="verDetallesInvestigador(persona)" class="persona-link">
+                  {{ persona }}
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <!-- Otros miembros -->
+          <div *ngIf="grupo.otrosMiembros.length > 0" class="card-field">
+            <span class="field-label">Otros miembros:</span>
+            <ul class="miembros-container">
+              <li *ngFor="let persona of grupo.otrosMiembros; trackBy: trackByPersona">
+                <a (click)="verDetallesInvestigador(persona)" class="persona-link">
+                  {{ persona }}
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="grupo-detalles-boton">
+            <button (click)="verDetallesGrupo(grupo.grupo)">Más información</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="pagination">
+    <button (click)="paginate('previous')" [disabled]="!canGoPreviousPage || isLoading">
+      Página anterior
+    </button>
+    <button (click)="paginate('next')" [disabled]="!canGoNextPage || isLoading">
+      Siguiente página
+    </button>
+  </div>
+
+  <ng-template #loadingOrError>
+    <div *ngIf="isLoading" class="loading-message">
+      <fa-icon [icon]="['fas', 'spinner']" class="fa-spin spinner-icon"></fa-icon>
+      <p class="loading-text">Cargando grupos...</p>
+    </div>
+
+    <p *ngIf="errorMessage" class="error-message">{{ errorMessage }}</p>
+  </ng-template>
+</div>

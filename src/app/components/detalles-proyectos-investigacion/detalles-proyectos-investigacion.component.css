@@ -1,0 +1,207 @@
+.card-container {
+  margin: 2rem auto;
+  max-width: 800px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.card-header {
+  background-color: #007bff;
+  color: #fff;
+  padding: 1rem;
+  border-bottom: 1px solid #ddd;
+}
+
+.back-arrow {
+  cursor: pointer;
+  margin-right: 1rem;
+}
+
+.home-icon {
+  cursor: pointer;
+}
+
+.back-arrow:hover,
+.home-icon:hover {
+  color: #0056b3;
+}
+
+.card-body {
+  padding: 1rem;
+  background-color: #fff;
+}
+
+.clickable-person {
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+.clickable-person:hover {
+  background-color: rgba(0, 123, 255, 0.05);
+}
+
+.project-fields-grid {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  column-gap: 1rem;
+  row-gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.card-field {
+  display: contents;
+}
+
+.field-label {
+  font-weight: bold;
+  color: #343a40;
+  text-align: right;
+  padding-right: 0.5rem;
+}
+
+.field-value {
+  color: #495057;
+  text-align: left;
+}
+
+.assigned-persons-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 1rem;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  margin-top: 0.5rem;
+}
+
+.person-card {
+  background-color: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  padding: 0.75rem 1rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.person-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+.person-name {
+  font-weight: bold;
+  font-size: 1.05rem;
+  margin-bottom: 0.5rem;
+  color: #007bff;
+}
+
+.person-detail {
+  font-size: 0.95rem;
+  margin-bottom: 0.25rem;
+  color: #495057;
+}
+
+.badge {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: bold;
+  padding: 0.1rem 0.3rem;
+  border-radius: 0.25rem;
+  vertical-align: middle;
+  margin-left: 0.5rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1;
+}
+
+.badge-principal {
+  background-color: #ffc107;
+  color: #212529;
+}
+
+.badge-politecnica {
+  background-color: #0d47a1;
+  color: #fff;
+}
+
+.badge-otro {
+  background-color: #388e3c;
+  color: #fff;
+}
+
+.badge-baja {
+  background-color: #dc3545;
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: bold;
+  border-radius: 0.25rem;
+  padding: 0.2rem 0.4rem;
+  margin-left: 0.5rem;
+  vertical-align: middle;
+}
+
+.badge-desconocido {
+  background-color: #fd7e14;
+  color: #fff;
+}
+
+.person-card.clickable-person {
+  cursor: pointer;
+}
+
+.principal-card {
+  border-color: #ffc107;
+  background-color: #fffbea;
+  box-shadow: 0 2px 6px rgba(255, 193, 7, 0.3);
+}
+
+.loading-container-proyecto {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 2rem 0;
+}
+
+.spinner-icon {
+  font-size: 1.5rem;
+  color: #007bff;
+}
+
+.loading-text {
+  margin: 0;
+  font-size: 1rem;
+  color: #007bff;
+}
+
+.no-proyecto {
+  text-align: center;
+  margin-top: 2rem;
+  background-color: #f8d7da;
+  color: #721c24;
+  padding: 20px;
+  border: 1px solid #f5c6cb;
+  border-radius: 5px;
+}
+
+.no-proyecto p {
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+@media (max-width: 480px) {
+  .project-fields-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .card-field {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .field-label {
+    text-align: left;
+    padding-right: 0;
+  }
+}

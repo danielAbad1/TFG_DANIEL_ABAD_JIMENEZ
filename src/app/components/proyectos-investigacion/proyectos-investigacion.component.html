@@ -1,0 +1,114 @@
+<div class="table-container">
+  <h2 style="text-align: center; position: relative;">
+    <fa-icon [icon]="['fas', 'arrow-left']" (click)="navigateBack()" class="back-arrow"></fa-icon>
+    <fa-icon [icon]="['fas', 'home']" (click)="goHome()" class="home-icon"></fa-icon>
+    Proyectos de Investigación Escuela Politécnica
+  </h2>
+
+  <div class="filtro-container">
+    <input type="text" [(ngModel)]="filtro" (input)="filtrarProyectos()" placeholder="Buscar por id o nombre">
+
+    <select [(ngModel)]="ambitoSeleccionado" (change)="actualizarFiltroAmbito($event)">
+      <option *ngFor="let ambito of ambitosDisponibles" [value]="ambito">
+        {{ ambito }}
+      </option>
+    </select>
+
+    <select [(ngModel)]="tipoProyectoSeleccionado" (change)="actualizarFiltroTipoProyecto($event)">
+      <option *ngFor="let tipo of tiposProyectoDisponibles" [value]="tipo">
+        {{ tipo }}
+      </option>
+    </select>
+
+    <input type="date" [(ngModel)]="fechaInicioSeleccionada" (change)="filtrarProyectos()">
+    <input type="date" [(ngModel)]="fechaFinSeleccionada" (change)="filtrarProyectos()">
+
+    <div class="filtro-subvencion">
+      <label>
+        <input type="checkbox" [(ngModel)]="filtroSubvencionActivo" (change)="filtrarProyectos()">
+        Activar filtro de subvención
+      </label>
+
+      <div *ngIf="filtroSubvencionActivo">
+        <div>
+          <label for="minGrantInput">Mínimo (€):</label>
+          <input id="minGrantInput" type="number" [(ngModel)]="minGrantSeleccionado" [min]="minGrant" [max]="maxGrant"
+            (ngModelChange)="onMinGrantChange($event)" />
+        </div>
+
+        <div>
+          <label for="maxGrantInput">Máximo (€):</label>
+          <input id="maxGrantInput" type="number" [(ngModel)]="maxGrantSeleccionado" [min]="minGrant" [max]="maxGrant"
+            (ngModelChange)="onMaxGrantChange($event)" />
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="errorMessage" class="error-message">
+    {{ errorMessage }}
+  </div>
+
+  <table *ngIf="!isLoading && !errorMessage" class="table">
+    <thead>
+      <tr>
+        <th>Identificador</th>
+        <th>Ámbito</th>
+        <th>Nombre del Proyecto</th>
+        <th>Subvención</th>
+        <th>Más información</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let proyecto of proyectosPaginados">
+        <td>{{ proyecto.projectIdentifier || 'No disponible' }}</td>
+        <td>{{ proyecto.ambito || 'No disponible' }}</td>
+        <td>{{ proyecto.nombre || 'No disponible' }}</td>
+        <td>{{ proyecto.grantNumber | number:'1.2-2':'es-ES' }} €</td>
+        <td>
+          <button (click)="verDetallesProyecto(proyecto.projectIdentifier)">Conocer</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div *ngIf="isLoading && !errorMessage" class="loading-container">
+    <fa-icon [icon]="['fas','spinner']" class="fa-spin spinner-icon"></fa-icon>
+    <p class="loading-text">Cargando proyectos...</p>
+  </div>
+
+  <div class="pagination">
+    <button (click)="paginate('previous')" [disabled]="offset === 0 || isLoading">Página anterior</button>
+    <button (click)="paginate('next')" [disabled]="!canGoNextPage || isLoading">Siguiente página</button>
+  </div>
+
+  <div *ngIf="proyectosFiltrados.length > 0 && !isLoading && !errorMessage" class="resumen-participacion">
+    <h3 style="margin-top: 2rem; font-weight: bold;">
+      <fa-icon [icon]="['fas', 'chart-pie']" style="margin-right: 6px;"></fa-icon>
+      Resumen de participación de la EP
+    </h3>
+
+    <p class="resumen-subtitulo">
+      Este resumen se actualiza según los filtros seleccionados.
+    </p>
+
+    <p>
+      <fa-icon [icon]="['fas', 'star']" style="margin-right: 6px;"
+        [title]="'Proyectos donde la EP lidera mediante sus investigadores'"></fa-icon>
+      <strong title="Proyectos donde el investigador principal pertenece a la Escuela Politécnica">
+        Proyectos con liderazgo EP:</strong>
+      {{ getResumenPorRol(proyectosFiltrados).principal.count }}
+      ({{ getResumenPorRol(proyectosFiltrados).principal.total | number:'1.2-2':'es-ES' }} €)
+    </p>
+
+    <p>
+      <fa-icon [icon]="['fas', 'user-friends']" style="margin-right: 6px;"
+        [title]="'Proyectos donde al menos un investigador de la EP colabora'"></fa-icon>
+      <strong
+        title="Proyectos donde al menos un investigador de la Escuela Politécnica participa sin ser el investigador principal">
+        Proyectos con participación EP:</strong>
+      {{ getResumenPorRol(proyectosFiltrados).colaborador.count }}
+      ({{ getResumenPorRol(proyectosFiltrados).colaborador.total | number:'1.2-2':'es-ES' }} €)
+    </p>
+  </div>
+</div>

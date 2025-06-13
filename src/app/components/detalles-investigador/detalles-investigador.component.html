@@ -1,0 +1,90 @@
+<div class="wrapper-centrado">
+  <div class="card-container">
+    <ng-container *ngIf="detallesInvestigador$ | async as detallesInvestigador; else loading">
+      <div *ngIf="detallesInvestigador.length > 0; else noData" class="card">
+        <div class="card-header">
+          <fa-icon [icon]="['fas', 'arrow-left']" (click)="navigateBack()" class="back-arrow"></fa-icon>
+          <fa-icon [icon]="['fas', 'home']" (click)="goHome()" class="home-icon"></fa-icon>
+          <h3>
+            {{ detallesInvestigador[0].nombre.value }}
+            <span *ngIf="detallesInvestigador[0].personalActual?.value?.toLowerCase() === 'true' ||
+              detallesInvestigador[0].personalActual?.value === '1'" class="badge badge-activo">
+              En activo
+            </span>
+            <span *ngIf="detallesInvestigador[0].personalActual?.value?.toLowerCase() !== 'true' &&
+              detallesInvestigador[0].personalActual?.value !== '1'" class="badge badge-baja">
+              Baja
+            </span>
+          </h3>
+        </div>
+
+        <div class="card-body">
+          <div *ngIf="detallesInvestigador[0]?.scopusId?.value" class="card-field">
+            <span class="field-label">Scopus ID:</span> {{ detallesInvestigador[0].scopusId?.value }}
+          </div>
+          <div *ngIf="detallesInvestigador[0]?.orcidId?.value" class="card-field">
+            <span class="field-label">Orcid ID:</span> {{ detallesInvestigador[0].orcidId?.value }}
+          </div>
+          <div *ngIf="detallesInvestigador[0]?.dialnetId?.value" class="card-field">
+            <span class="field-label">Dialnet ID:</span> {{ detallesInvestigador[0].dialnetId?.value }}
+          </div>
+          <div *ngIf="detallesInvestigador[0]?.indiceHscopus?.value" class="card-field">
+            <span class="field-label">Índice Scopus:</span> {{ detallesInvestigador[0].indiceHscopus?.value }}
+          </div>
+          <div *ngIf="detallesInvestigador[0]?.categoriaPDI?.value" class="card-field">
+            <span class="field-label">Categoría PDI:</span> {{ detallesInvestigador[0].categoriaPDI?.value }}
+          </div>
+          <div *ngIf="detallesInvestigador[0]?.nombreCentro?.value" class="card-field">
+            <span class="field-label">Centro:</span>
+            {{ detallesInvestigador[0].nombreCentro?.value | uppercase }}
+            <span *ngIf="detallesInvestigador[0]?.campusCentro?.value">
+              - {{ detallesInvestigador[0].campusCentro?.value | uppercase }}
+            </span>
+          </div>
+          <div *ngIf="detallesInvestigador[0]?.nombreDepartamento?.value" class="card-field">
+            <span class="field-label">Departamento:</span>
+            {{ detallesInvestigador[0].nombreDepartamento?.value | uppercase }}
+          </div>
+          <div *ngIf="detallesInvestigador[0]?.areas?.value" class="card-field">
+            <span class="field-label">Áreas de conocimiento:</span>
+            <ng-container *ngFor="let area of getAreas(detallesInvestigador[0]?.areas?.value)">
+              {{ area.trim() }}
+            </ng-container>
+          </div>
+          <div *ngIf="detallesInvestigador[0]?.gruposInvestigacion?.value" class="card-field">
+            <span class="field-label">
+              {{ detallesInvestigador[0].personalActual?.value?.toLowerCase() === 'true' ||
+              detallesInvestigador[0].personalActual?.value === '1'
+              ? 'Grupo de investigación:'
+              : 'Grupo de investigación al que pertenecía:' }}
+            </span>
+            <ng-container
+              *ngFor="let grupo of getGruposInvestigacion(detallesInvestigador[0]?.gruposInvestigacion?.value); let last = last">
+              <a (click)="verGrupoInvestigacion(grupo.trim())" class="grupo-link" title="Ver grupo: {{ grupo.trim() }}">
+                {{ grupo.trim() }}
+              </a><span *ngIf="!last">,</span>
+            </ng-container>
+          </div>
+
+          <div class="botones-acciones">
+            <button (click)="verProyectos(detallesInvestigador[0].nombre.value)">Ver Proyectos</button>
+            <button (click)="verPublicaciones(detallesInvestigador[0].nombre.value)">Ver Publicaciones</button>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+
+    <ng-template #loading>
+      <div *ngIf="isLoading" class="loading-investigador">
+        <fa-icon [icon]="['fas', 'spinner']" class="fa-spin spinner-icon"></fa-icon>
+        <p>Cargando detalles del investigador...</p>
+      </div>
+    </ng-template>
+
+    <ng-template #noData>
+      <div class="no-publicacion">
+        <p>No se encontraron detalles para este investigador.</p>
+      </div>
+    </ng-template>
+  </div>
+</div>

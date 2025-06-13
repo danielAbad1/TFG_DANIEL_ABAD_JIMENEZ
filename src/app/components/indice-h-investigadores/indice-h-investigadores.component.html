@@ -1,0 +1,54 @@
+<div class="table-container">
+  <div class="title-container">
+    <fa-icon [icon]="['fas', 'arrow-left']" (click)="navigateBack()" class="back-arrow"></fa-icon>
+    <fa-icon [icon]="['fas', 'home']" (click)="goHome()" class="home-icon"></fa-icon>
+    <h2>Ranking de investigadores por índice H</h2>
+  </div>
+
+  <div class="filtro-container">
+    <input type="text" (input)="actualizarFiltroNombre($event)" placeholder="Buscar por nombre del investigador">
+
+    <input type="number" [attr.min]="filtroMinIndiceH$.value || 0" (input)="actualizarFiltroMaxIndiceH($event)"
+      placeholder="Índice H máximo">
+
+    <input type="number" min="0" [attr.max]="filtroMaxIndiceH$.value || ''" (input)="actualizarFiltroMinIndiceH($event)"
+      placeholder="Índice H mínimo">
+
+    <button *ngIf="investigadoresFiltrados.length > 0" (click)="descargarCsvIndiceH()" class="btn-download">
+      <fa-icon [icon]="['fas', 'download']"></fa-icon>
+    </button>
+  </div>
+
+  <table *ngIf="!isLoading; else loading" class="table">
+    <thead>
+      <tr>
+        <th>Nombre</th>
+        <th>Índice H</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let investigador of investigadoresPaginados">
+        <td>
+          <a (click)="verDetallesInvestigadorDesdeIndiceH(investigador.nombre.value)" class="persona-link">
+            {{ investigador.nombre.value }}
+          </a>
+        </td>
+        <td [ngClass]="{'highest-h-index': investigador.indiceH.value === maxHIndex}">
+          {{ investigador.indiceH.value }}
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <ng-template #loading>
+    <div class="loading-indice-h">
+      <fa-icon [icon]="['fas','spinner']" class="fa-spin spinner-icon"></fa-icon>
+      <p>Cargando investigadores...</p>
+    </div>
+  </ng-template>
+
+  <div class="pagination">
+    <button (click)="paginate('previous')" [disabled]="offset === 0 || isLoading">Página anterior</button>
+    <button (click)="paginate('next')" [disabled]="!canGoNextPage || isLoading">Siguiente página</button>
+  </div>
+</div>

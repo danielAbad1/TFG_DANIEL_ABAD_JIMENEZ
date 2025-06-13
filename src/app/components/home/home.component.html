@@ -1,0 +1,41 @@
+<div class="main-container">
+  <h1 (click)="navigateToHome()">Explorador Científico - Escuela Politécnica</h1>
+  <p class="subtitle">Accede a investigadores, proyectos, grupos y publicaciones de la Escuela Politécnica en un único
+    lugar</p>
+
+  <div class="card-container">
+    <div class="card">
+      <h3>Investigadores</h3>
+      <p>Consulta el listado de investigadores de la Escuela Politécnica, sus áreas de conocimiento y datos relevantes.
+      </p>
+      <button (click)="navigateToResearchers()">Explorar</button>
+    </div>
+
+    <div class="card">
+      <h3>Grupos de Investigación</h3>
+      <p>Accede a la información de los grupos de investigación y conoce a los miembros que los integran.</p>
+      <button (click)="navigateToResearchGroups()">Explorar</button>
+    </div>
+
+    <div class="card">
+      <h3>Proyectos de Investigación</h3>
+      <p>Explora los proyectos de investigación, los investigadores participantes, los datos de financiación y mucha más
+        información relevante.</p>
+      <button (click)="navigateToResearchProjects()">Explorar</button>
+    </div>
+
+    <div class="card">
+      <h3>Publicaciones</h3>
+      <p>Consulta el listado de publicaciones asociadas a investigadores de la Escuela Politécnica.</p>
+      <button (click)="navigateToScopusPublicaciones()">Explorar</button>
+    </div>
+
+    <div class="card">
+      <h3>Buscador General</h3>
+      <p>Realiza una búsqueda unificada sobre investigadores, grupos, proyectos y publicaciones de forma centralizada.
+      </p>
+      <button (click)="navigateToBuscadorGeneral()">Buscar</button>
+    </div>
+
+  </div>
+</div>

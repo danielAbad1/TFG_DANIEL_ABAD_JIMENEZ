@@ -1,0 +1,66 @@
+<div class="wrapper-centrado">
+  <div class="proyectos-autor-container">
+    <div class="title-container">
+      <fa-icon [icon]="['fas', 'arrow-left']" (click)="navigateBack()" class="back-arrow"></fa-icon>
+      <fa-icon [icon]="['fas', 'home']" (click)="goHome()" class="home-icon"></fa-icon>
+      <h2>Proyectos de {{ nombreAutor | titlecase }}</h2>
+    </div>
+
+    <ng-container *ngIf="proyectos$ | async as proyectos; else cargando">
+      <!-- Resumen proyectos-->
+      <div class="resumen-proyectos" *ngIf="proyectos.length > 0">
+        <p>
+          <fa-icon [icon]="['fas', 'money-bill-wave']"></fa-icon>
+          <strong>{{ proyectosPrincipales.length }}</strong>
+          {{ proyectosPrincipales.length === 1 ? 'proyecto' : 'proyectos' }}
+          como <strong>investigador principal</strong> -
+          <strong>{{ totalPrincipalFormateado }}</strong>
+        </p>
+        <p>
+          <fa-icon [icon]="['fas', 'handshake']"></fa-icon>
+          <strong>{{ proyectosColaboracion.length }}</strong>
+          {{ proyectosColaboracion.length === 1 ? 'proyecto' : 'proyectos' }}
+          en <strong>colaboraciones</strong> -
+          <strong>{{ totalColaboracionFormateado }}</strong>
+        </p>
+      </div>
+
+      <ng-container *ngIf="proyectos.length > 0; else sinProyectos">
+        <!-- Sección Investigador Principal -->
+        <div *ngIf="proyectosPrincipales.length">
+          <h3>Investigador Principal</h3>
+          <ul>
+            <li *ngFor="let p of proyectosPrincipales" (click)="verDetallesProyecto(p.projectIdentifier.value)"
+              class="clickable-result">
+              {{ p.nombreProyecto.value }}
+            </li>
+          </ul>
+        </div>
+
+        <!-- Sección Colaboración -->
+        <div *ngIf="proyectosColaboracion.length">
+          <h3>Colaboraciones</h3>
+          <ul>
+            <li *ngFor="let p of proyectosColaboracion" (click)="verDetallesProyecto(p.projectIdentifier.value)"
+              class="clickable-result">
+              {{ p.nombreProyecto.value }}
+            </li>
+          </ul>
+        </div>
+      </ng-container>
+
+      <ng-template #sinProyectos>
+        <div class="sin-resultados">
+          No se encontraron proyectos para este investigador.
+        </div>
+      </ng-template>
+    </ng-container>
+
+    <ng-template #cargando>
+      <div class="loading-proyectos">
+        <fa-icon [icon]="['fas', 'spinner']" class="fa-spin spinner-icon"></fa-icon>
+        <p>Cargando proyectos...</p>
+      </div>
+    </ng-template>
+  </div>
+</div>

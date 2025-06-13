@@ -1,0 +1,230 @@
+.wrapper-centrado {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: calc(100vh - 40px);
+}
+
+.publicaciones-container {
+  max-height: 600px;
+  height: 100%;
+  margin: 40px auto 20px;
+  width: 90%;
+  max-width: 1200px;
+  overflow-y: auto;
+  background-color: hsl(210, 17%, 98%);
+  padding: 30px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+
+  scrollbar-width: thin;
+  scrollbar-color: #007bff #f1f1f1;
+}
+.publicaciones-container::-webkit-scrollbar {
+  width: 8px;
+}
+.publicaciones-container::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+.publicaciones-container::-webkit-scrollbar-thumb {
+  background-color: #007bff;
+  border-radius: 4px;
+  border: 2px solid #f1f1f1;
+}
+
+.publicaciones-container .title-container {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background-color: hsl(210, 17%, 98%);
+  padding: 20px 0;
+}
+
+.back-arrow,
+.home-icon {
+  position: absolute;
+  font-size: 24px;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+.back-arrow {
+  left: 0;
+}
+.home-icon {
+  left: 40px;
+}
+.back-arrow:hover,
+.home-icon:hover {
+  color: #007bff;
+}
+
+.publicaciones-container .title-container h2 {
+  margin: 0;
+  flex-grow: 1;
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #343a40;
+}
+
+.publicaciones-container h3 {
+  margin-top: 20px;
+  color: #007bff;
+  font-size: 1.25rem;
+}
+.publicaciones-container ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.publicaciones-container li {
+  padding: 8px 0;
+  border-bottom: 1px solid #dee2e6;
+}
+.publicaciones-container .publication-link {
+  display: block;
+  padding: 4px 0;
+  color: #343a40;
+  text-decoration: none;
+  font-weight: bold;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+.publicaciones-container .publication-link:hover {
+  color: #6c757d;
+}
+
+.publicaciones-container .no-publicaciones,
+.publicaciones-container p {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 16px;
+  color: #495057;
+}
+.publicaciones-container .no-publicaciones {
+  background-color: #f8d7da;
+  color: #721c24;
+  padding: 20px;
+  border: 1px solid #f5c6cb;
+  border-radius: 5px;
+}
+
+.filter-download-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  position: absolute;
+  right: 20px;
+}
+.filtro-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+#filtro-anios {
+  padding: 8px;
+  height: 38px;
+  border: 1px solid #ced4da;
+  border-radius: 5px;
+  background: white;
+  color: #495057;
+  cursor: pointer;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+#filtro-anios:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+.btn-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border: none;
+  border-radius: 50%;
+  background-color: #007bff;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.1s ease;
+}
+
+.btn-icon:hover {
+  background-color: #0056b3;
+}
+
+.btn-icon:active {
+  transform: scale(0.95);
+}
+
+.btn-icon fa-icon {
+  font-size: 16px;
+}
+
+.btn-icon:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.loading-publicaciones {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  margin: 1rem 0;
+  background-color: #e9f7fe;
+  border: 1px solid #b6effe;
+  border-radius: 6px;
+  color: #0c5460;
+}
+
+.spinner-icon {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+.resumen-publicaciones {
+  background-color: #f1f5ff;
+  border: 1px solid #cfe2ff;
+  border-radius: 6px;
+  padding: 15px 20px;
+  margin: 10px auto 25px;
+  text-align: center;
+  color: #0d3c84;
+  font-size: 16px;
+  box-shadow: 0 1px 3px rgba(13, 60, 132, 0.1);
+  border-bottom: 2px solid #cfe2ff;
+  margin-bottom: 20px;
+}
+
+.resumen-publicaciones p {
+  margin: 5px 0;
+  font-weight: 500;
+}
+
+.resumen-publicaciones fa-icon {
+  color: #007bff;
+  margin-right: 8px;
+  font-size: 1.2rem;
+  vertical-align: middle;
+}
+
+@media (max-width: 768px) {
+  .publicaciones-container {
+    width: 95%;
+    padding: 15px;
+  }
+  .publicaciones-container .title-container h2 {
+    font-size: 1.25rem;
+  }
+  .publicaciones-container h3 {
+    font-size: 1.1rem;
+  }
+}

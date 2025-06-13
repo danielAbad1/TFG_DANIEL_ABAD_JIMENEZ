@@ -1,0 +1,56 @@
+<div class="table-container">
+  <div class="header-container">
+    <div class="icon-group">
+      <fa-icon [icon]="['fas', 'arrow-left']" (click)="navigateBack()" class="back-arrow">
+      </fa-icon>
+      <fa-icon [icon]="['fas', 'home']" (click)="goHome()">
+      </fa-icon>
+    </div>
+
+    <h2>Investigadores Escuela Politécnica</h2>
+
+    <button class="indice-h-button" (click)="navigateToMoreIndiceH()">
+      Ver Índice H
+    </button>
+  </div>
+
+  <input type="text" [(ngModel)]="filtro" (input)="filtrarInvestigadores()"
+    placeholder="Buscar por nombre o área de conocimiento" class="search-input" />
+
+  <div *ngIf="errorMessage" class="error-message">{{ errorMessage }}</div>
+
+  <table *ngIf="!isLoading && !errorMessage" class="table">
+    <thead>
+      <tr>
+        <th>Nombre del Investigador</th>
+        <th>Áreas de Conocimiento</th>
+        <th>Más información</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let investigador of investigadoresPaginados">
+        <td>{{ investigador.nombre.value }}</td>
+        <td>{{ investigador.areas.value || 'No disponible' }}</td>
+        <td>
+          <button (click)="verDetallesInvestigador(investigador.nombre.value)">
+            Conocer
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div *ngIf="isLoading && !errorMessage" class="loading-listadoInvestigadores">
+    <fa-icon [icon]="['fas', 'spinner']" class="fa-spin spinner-icon"></fa-icon>
+    <p>Cargando lista de investigadores...</p>
+  </div>
+
+  <div class="pagination">
+    <button (click)="paginate('previous')" [disabled]="offset === 0 || isLoading">
+      Página anterior
+    </button>
+    <button (click)="paginate('next')" [disabled]="!canGoNextPage || isLoading">
+      Siguiente página
+    </button>
+  </div>
+</div>

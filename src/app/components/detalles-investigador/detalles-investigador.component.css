@@ -1,0 +1,175 @@
+.wrapper-centrado {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+}
+
+.card-container {
+  width: 80%;
+  margin: 40px auto;
+  background-color: #f8f9fa;
+  padding: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+}
+
+h2 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.card {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.card-header {
+  background-color: #007bff;
+  color: white;
+  padding: 10px;
+  border-radius: 8px 8px 0 0;
+  text-align: center;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+
+.card-header h3 {
+  margin: 0;
+  flex-grow: 1;
+  text-align: center;
+}
+
+.back-arrow {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 24px;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.back-arrow:hover {
+  color: #0056b3;
+}
+
+.home-icon {
+  position: absolute;
+  left: 50px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 24px;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.home-icon:hover {
+  color: #0056b3;
+}
+
+.card-body {
+  position: relative;
+  padding-bottom: 40px;
+}
+
+.card-field {
+  margin-bottom: 10px;
+  font-size: 16px;
+}
+
+.field-label {
+  font-weight: bold;
+  color: #495057;
+  margin-right: 10px;
+}
+
+.card-field:not(:last-child) {
+  border-bottom: 1px solid #dee2e6;
+  padding-bottom: 10px;
+  margin-bottom: 10px;
+}
+
+.card-body ng-container {
+  display: inline-block;
+  margin-right: 5px;
+}
+
+.botones-acciones {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  display: flex;
+  gap: 10px;
+}
+
+.botones-acciones button {
+  padding: 8px 12px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.botones-acciones button:hover {
+  background-color: #0056b3;
+}
+
+.grupo-link {
+  color: #007bff;
+  text-decoration: none;
+  font-weight: bold;
+  margin-right: 10px;
+  cursor: pointer;
+}
+
+.grupo-link:hover {
+  text-decoration: underline;
+  color: #0056b3;
+}
+
+.loading-investigador {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  background-color: #e9f7fe;
+  border: 1px solid #b6effe;
+  border-radius: 6px;
+  margin: 1rem 0;
+  color: #0c5460;
+}
+
+.spinner-icon {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+.badge-baja {
+  background-color: #dc3545;
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: bold;
+  border-radius: 0.25rem;
+  padding: 0.2rem 0.4rem;
+  margin-left: 0.5rem;
+  vertical-align: middle;
+}
+
+.badge-activo {
+  background-color: #28a745;
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: bold;
+  border-radius: 0.25rem;
+  padding: 0.2rem 0.4rem;
+  margin-left: 0.5rem;
+  vertical-align: middle;
+}

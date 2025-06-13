@@ -1,0 +1,68 @@
+<div class="card-container">
+  <div *ngIf="detallesPublicacion$ | async as publicacion; else noPublicacion" class="card">
+    <div class="card-header">
+      <fa-icon [icon]="['fas', 'arrow-left']" (click)="navigateBack()" class="back-arrow"></fa-icon>
+      <fa-icon [icon]="['fas', 'home']" (click)="goHome()" class="home-icon"></fa-icon>
+      <h3>
+        {{ publicacion.title?.value || 'Sin título' }}
+        {{ publicacion.hasPublicationYear?.value ? ' - ' + publicacion.hasPublicationYear!.value : '' }}
+      </h3>
+    </div>
+
+    <div class="card-body">
+      <div class="card-field">
+        <span class="field-label">
+          {{ publicacion.autoresExtended?.length === 1 ? 'Autor:' : 'Autores:' }}
+        </span>
+
+        <ng-container *ngIf="publicacion.autoresExtended?.length; else noAutores">
+          <ul class="authors-list">
+            <li *ngFor="let autor of publicacion.autoresExtended">
+              <a class="author-link clickable-person" (click)="verDetallesInvestigador(autor.name)">
+                {{ autor.name }}
+              </a>
+            </li>
+          </ul>
+        </ng-container>
+      </div>
+
+      <ng-template #noAutores>
+        <div class="no-autores">No disponible</div>
+      </ng-template>
+
+      <ng-container *ngFor="let field of [
+        { label: 'ISBN', value: publicacion.isbn?.value },
+        { label: 'EISSN', value: publicacion.eissn?.value },
+        { label: 'BibTeX', value: publicacion.bibtex?.value },
+        { label: 'Revista', value: publicacion.publisher?.value },
+        { label: 'Editorial', value: publicacion.editorial?.value },
+        { label: 'Tipo de Publicación', value: publicacion.tipoPublicacion?.value },
+        { label: 'URL Dialnet', value: publicacion.urlDialnet?.value, isLink: true },
+        { label: 'URL Scopus', value: publicacion.urlScopus?.value, isLink: true },
+        { label: 'Publicada en revista', value: publicacion.publicadaEnRevista?.value, isLink: true }
+      ]">
+        <div *ngIf="field.value" class="card-field">
+          <span class="field-label">{{ field.label }}:</span>
+          <ng-container *ngIf="!field.isLink; else linkField">
+            {{ field.value }}
+          </ng-container>
+          <ng-template #linkField>
+            <a [href]="field.value" target="_blank">{{ field.value }}</a>
+          </ng-template>
+        </div>
+      </ng-container>
+    </div>
+  </div>
+
+  <ng-template #noPublicacion>
+    <div *ngIf="isLoadingPublicacion; else noData" class="loading-publicacion">
+      <fa-icon [icon]="['fas', 'spinner']" class="fa-spin spinner-icon"></fa-icon>
+      <p>Cargando detalles de la publicación...</p>
+    </div>
+
+    <ng-template #noData>
+      <div class="no-publicacion">
+        <p>No se encontraron detalles para esta publicación.</p>
+      </div>
+    </ng-template>
+  </ng-template>

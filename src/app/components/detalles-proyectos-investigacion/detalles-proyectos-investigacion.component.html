@@ -1,0 +1,86 @@
+<div class="card-container">
+  <div *ngIf="proyectoDetalles$ | async as proyecto; else loadingOrError" class="card">
+    <div class="card-header">
+      <fa-icon [icon]="['fas','arrow-left']" (click)="navigateBack()" class="back-arrow"></fa-icon>
+      <fa-icon [icon]="['fas','home']" (click)="goHome()" class="home-icon"></fa-icon>
+      <h3>{{ proyecto.nombre }}</h3>
+    </div>
+    <div class="card-body">
+      <div class="project-fields-grid">
+        <ng-container *ngFor="let field of [
+          { label: 'Identificador', value: proyecto.identifier },
+          { label: 'Identificador del Proyecto', value: proyecto.projectIdentifier },
+          { label: 'Ámbito', value: proyecto.ambito },
+          { label: 'Tipo de Proyecto', value: proyecto.projectType },
+          { label: 'Entidad Financiadora', value: proyecto.entidadFinanciadora },
+          { label: 'Subvención', value: proyecto.grantNumber ? proyecto.grantNumber + ' €' : null },
+          { label: 'Fecha de Inicio', value: proyecto.startDate },
+          { label: 'Fecha de Fin', value: proyecto.endDate }
+        ]">
+          <div *ngIf="field.value" class="card-field">
+            <span class="field-label">{{ field.label }}:</span>
+            <span class="field-value">{{ field.value }}</span>
+          </div>
+        </ng-container>
+      </div>
+
+      <div class="card-section" *ngIf="proyecto.assignedPersons?.length">
+        <h4>Personas Asignadas</h4>
+        <ul class="assigned-persons-grid">
+          <li *ngFor="let person of proyecto.assignedPersons" class="person-card clickable-person"
+            (click)="verDetallesInvestigador(person.personalName)" [ngClass]="{
+              'principal-card': person.role.toLowerCase().trim() === 'investigador principal'
+              }">
+
+            <div class="person-name">
+              {{ person.personalName }}
+
+              <span *ngIf="person.role.toLowerCase().trim() === 'investigador principal'" class="badge badge-principal">
+                Principal
+              </span>
+
+              <ng-container *ngIf="person.personalActual">
+                <span *ngIf="person.personalCentro; else unknownBadge" class="badge" [ngClass]="{
+                  'badge-politecnica': person.isPolitecnica,
+                  'badge-otro': !person.isPolitecnica
+                  }" [title]="person.personalCentro">
+                  {{ person.personalCentro | acronym }}
+                </span>
+
+                <ng-template #unknownBadge>
+                  <span class="badge badge-desconocido">Desconocido</span>
+                </ng-template>
+              </ng-container>
+
+              <span *ngIf="!person.personalActual" class="badge badge-baja">
+                Baja
+              </span>
+            </div>
+
+            <div class="person-detail">
+              <span class="field-label">Rol:</span> {{ person.role }}
+            </div>
+
+            <div class="person-detail" *ngIf="person.scopusId">
+              <span class="field-label">Scopus ID:</span> {{ person.scopusId }}
+            </div>
+
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <ng-template #loadingOrError>
+    <div *ngIf="errorMessage; else loadingProyecto" class="no-proyecto">
+      <p>{{ errorMessage }}</p>
+    </div>
+  </ng-template>
+
+  <ng-template #loadingProyecto>
+    <div class="loading-container-proyecto">
+      <fa-icon [icon]="['fas','spinner']" class="fa-spin spinner-icon"></fa-icon>
+      <p class="loading-text">Cargando detalles del proyecto...</p>
+    </div>
+  </ng-template>
+</div>
