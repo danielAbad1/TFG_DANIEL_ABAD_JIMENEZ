@@ -1,0 +1,211 @@
+/* =================================================
+   CONTENEDOR PRINCIPAL Y ESTRUCTURA DE LA TARJETA
+   ================================================= */
+.card-container {
+  margin: 2rem auto;
+  max-width: 800px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.card-header {
+  background-color: #007bff;
+  color: #fff;
+  padding: 1rem;
+  border-bottom: 1px solid #ddd;
+}
+
+.back-arrow {
+  cursor: pointer;
+  margin-right: 1rem;
+}
+
+.home-icon {
+  cursor: pointer;
+}
+
+.back-arrow:hover, .home-icon:hover {
+  color: #0056b3;
+}
+
+.card-body {
+  padding: 1rem;
+  background-color: #fff;
+}
+
+/* Cambia el cursor y agrega un leve efecto visual al pasar por encima */
+.clickable-person {
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+.clickable-person:hover {
+  background-color: rgba(0, 123, 255, 0.05); /* un muy suave “hover” azul */
+}
+
+/* ====================
+   CAMPOS DEL PROYECTO
+   ==================== */
+
+/* Container en grid para alinear etiqueta + valor */
+.project-fields-grid {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  column-gap: 1rem; /* Espacio horizontal entre etiqueta y valor */
+  row-gap: 0.75rem; /* Espacio vertical entre filas */
+  margin-bottom: 1.5rem; /* Separación antes de “Personas Asignadas” */
+}
+
+/* Cada “campo” transmite sus hijos (.field-label y .field-value) al grid padre */
+.card-field {
+  display: contents;
+}
+
+/* Etiqueta de campo (p. ej. “Identificador:”) */
+.field-label {
+  font-weight: bold;
+  color: #343a40;
+  text-align: right; /* Alinea la etiqueta a la derecha dentro de su celda */
+  padding-right: 0.5rem;
+}
+
+/* Valor de campo (p. ej. “GR21133”) */
+.field-value {
+  color: #495057;
+  text-align: left;
+}
+
+/* =============================
+   GRID DE TARJETAS DE PERSONAS
+   ============================= */
+
+/* El <ul> se comporta como grid responsive */
+.assigned-persons-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 1rem;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  margin-top: 0.5rem;
+}
+
+/* Cada <li> es una tarjeta individual */
+.person-card {
+  background-color: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  padding: 0.75rem 1rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.person-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+/* Nombre del investigador en cada tarjeta */
+.person-name {
+  font-weight: bold;
+  font-size: 1.05rem;
+  margin-bottom: 0.5rem;
+  color: #007bff;
+}
+
+/* Detalles (rol, Scopus ID) dentro de la tarjeta */
+.person-detail {
+  font-size: 0.95rem;
+  margin-bottom: 0.25rem;
+  color: #495057;
+}
+
+/* ======================================
+   AJUSTES RESPONSIVE PARA PANTALLAS PEQUEÑAS
+   ====================================== */
+@media (max-width: 480px) {
+  /* El grid de campos pasa a una sola columna */
+  .project-fields-grid {
+    grid-template-columns: 1fr;
+  }
+  /* Cada campo (etiqueta + valor) ocupa una fila completa */
+  .card-field {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+  .field-label {
+    text-align: left;
+    padding-right: 0;
+  }
+}
+
+/* ========================
+   ESTILO PARA BADGE “PRINCIPAL”
+   ======================== */
+.badge-principal {
+  background-color: #ffc107;
+  color: #212529;
+  font-size: 0.7rem;
+  font-weight: bold;
+  border-radius: 0.25rem;
+  padding: 0.1rem 0.3rem;
+  margin-left: 0.5rem;
+  vertical-align: middle;
+}
+
+/* ======================================
+   ESTILO ESPECIAL PARA LA TARJETA DEL
+   INVESTIGADOR PRINCIPAL (la que lleva
+   .principal-card)
+   ====================================== */
+.principal-card {
+  border-color: #ffc107;
+  background-color: #fffbea;
+  box-shadow: 0 2px 6px rgba(255, 193, 7, 0.3);
+}
+
+.not-politecnica {
+  opacity: 0.6;
+  cursor: default;
+  pointer-events: none;
+}
+
+/* ======================================
+   SPINNER + TEXTO “CARGANDO DETALLES DEL PROYECTO”
+   ====================================== */
+.loading-container-proyecto {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 2rem 0;  /* espacio vertical para centrar mejor */
+}
+
+.spinner-icon {
+  font-size: 1.5rem;
+  color: #007bff;
+}
+
+.loading-text {
+  margin: 0;
+  font-size: 1rem;
+  color: #007bff;
+}
+
+/* ======================================
+   MENSAJE DE PROYECTO NO ENCONTRADO O ERROR
+   ====================================== */
+.no-proyecto {
+  text-align: center;
+  margin-top: 2rem;
+  background-color: #f8d7da;
+  color: #721c24;
+  padding: 20px;
+  border: 1px solid #f5c6cb;
+  border-radius: 5px;
+}
+
+.no-proyecto p {
+  font-size: 1.1rem;
+  margin: 0;
+}

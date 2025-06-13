@@ -1,0 +1,59 @@
+<div class="wrapper-centrado">
+  <div class="publicaciones-container">
+    <div class="title-container">
+      <fa-icon [icon]="['fas', 'arrow-left']" (click)="navigateBack()" class="back-arrow"></fa-icon>
+      <fa-icon [icon]="['fas', 'home']" (click)="goHome()" class="home-icon"></fa-icon>
+      <h2>Publicaciones de {{ nombreAutor | titlecase }}</h2>
+
+      <!-- Mostrar el filtro solo si el autor tiene publicaciones -->
+      <div *ngIf="tienePublicaciones" class="filter-download-container">
+        <div class="filtro-container">
+          <select id="filtro-anios" (change)="actualizarFiltroAnios($event)" [(ngModel)]="filtroAnios">
+            <option *ngFor="let opcion of opcionesFiltroAnios" [value]="opcion.value">
+              {{ opcion.label }}
+            </option>
+          </select>
+        </div>
+
+        <!-- Botón de descarga CSV -->
+        <button (click)="descargarCsv()" class="btn-icon"
+          [disabled]="tienePublicaciones && publicacionesAgrupadas.length === 0">
+          <fa-icon [icon]="['fas', 'download']"></fa-icon>
+        </button>
+      </div>
+    </div>
+
+    <!-- Listado de publicaciones -->
+    <ng-container *ngIf="publicacionesAgrupadas$ | async as publicacionesAgrupadas">
+      <div *ngIf="publicacionesAgrupadas.length > 0; else noPublicaciones">
+        <div *ngFor="let group of publicacionesAgrupadas">
+          <h3>{{ group.year }}</h3>
+          <ul>
+            <li *ngFor="let pub of group.publicaciones">
+              <a (click)="verDetallesPublicacion(pub.titulo.value)" class="publication-link">
+                {{ pub.titulo.value || 'Sin título' }}
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </ng-container>
+
+    <!-- Mensaje si no hay publicaciones en los años filtrados -->
+    <ng-template #noPublicaciones>
+      <div class="no-publicaciones">
+        <p *ngIf="!tienePublicaciones" class="error-message">No se encontraron publicaciones para este autor.</p>
+        <p *ngIf="tienePublicaciones && publicacionesAgrupadas.length === 0">
+          No hay publicaciones en los años seleccionados. Elige otra opción.
+        </p>
+      </div>
+    </ng-template>
+
+    <!-- Mensaje de carga -->
+    <!-- Mensaje de carga con spinner -->
+    <div *ngIf="!(publicacionesAgrupadas$ | async)" class="loading-publicaciones">
+      <fa-icon [icon]="['fas', 'spinner']" class="fa-spin spinner-icon"></fa-icon>
+      <p>Cargando publicaciones...</p>
+    </div>
+  </div>
+</div>

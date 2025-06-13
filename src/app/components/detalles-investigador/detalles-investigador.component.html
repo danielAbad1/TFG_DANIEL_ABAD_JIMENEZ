@@ -1,0 +1,51 @@
+<div class="wrapper-centrado">
+  <div class="card-container">
+    <div *ngIf="detallesInvestigador$ | async as detallesInvestigador" class="card">
+      <div class="card-header">
+        <fa-icon [icon]="['fas', 'arrow-left']" (click)="navigateBack()" class="back-arrow"></fa-icon>
+        <fa-icon [icon]="['fas', 'home']" (click)="goHome()" class="home-icon"></fa-icon>
+        <h3>{{ detallesInvestigador[0].nombre.value }}</h3>
+      </div>
+      <div class="card-body">
+        <div *ngIf="detallesInvestigador[0]?.scopusId?.value" class="card-field">
+          <span class="field-label">Scopus ID:</span> {{ detallesInvestigador[0].scopusId?.value }}
+        </div>
+        <div *ngIf="detallesInvestigador[0]?.orcidId?.value" class="card-field">
+          <span class="field-label">Orcid ID:</span> {{ detallesInvestigador[0].orcidId?.value }}
+        </div>
+        <div *ngIf="detallesInvestigador[0]?.dialnetId?.value" class="card-field">
+          <span class="field-label">Dialnet ID:</span> {{ detallesInvestigador[0].dialnetId?.value }}
+        </div>
+        <div *ngIf="detallesInvestigador[0]?.indiceHscopus?.value" class="card-field">
+          <span class="field-label">Índice Scopus:</span> {{ detallesInvestigador[0].indiceHscopus?.value }}
+        </div>
+        <div *ngIf="detallesInvestigador[0]?.categoriaPDI?.value" class="card-field">
+          <span class="field-label">Categoría PDI:</span> {{ detallesInvestigador[0].categoriaPDI?.value }}
+        </div>
+        <div class="card-field">
+          <span class="field-label">Departamento:</span> {{ detallesInvestigador[0].nombreDepartamento.value }}
+        </div>
+        <div class="card-field">
+          <span class="field-label">Áreas de conocimiento:</span>
+          <ng-container *ngFor="let area of getAreas(detallesInvestigador[0]?.areas?.value)">
+            {{ area.trim() }}
+          </ng-container>
+        </div>
+        <div *ngIf="detallesInvestigador[0]?.gruposInvestigacion?.value" class="card-field">
+          <span class="field-label">Grupo de investigación:</span>
+          <ng-container
+            *ngFor="let grupo of getGruposInvestigacion(detallesInvestigador[0]?.gruposInvestigacion?.value)">
+            <a (click)="verGrupoInvestigacion(grupo.trim())" class="grupo-link">
+              {{ grupo.trim() }}
+            </a>
+          </ng-container>
+        </div>
+        <!-- Botón Ver Publicaciones -->
+        <div class="botones-acciones">
+          <button (click)="verProyectos(detallesInvestigador[0].nombre.value)">Ver Proyectos</button>
+          <button (click)="verPublicaciones(detallesInvestigador[0].nombre.value)">Ver Publicaciones</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

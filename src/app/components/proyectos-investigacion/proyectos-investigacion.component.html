@@ -1,0 +1,97 @@
+<div class="table-container">
+  <!-- Contenedor superior con flecha -->
+  <h2 style="text-align: center; position: relative;">
+    <fa-icon [icon]="['fas', 'arrow-left']" (click)="navigateBack()" class="back-arrow"></fa-icon>
+    <fa-icon [icon]="['fas', 'home']" (click)="goHome()" class="home-icon"></fa-icon>
+    Lista de Proyectos de Investigación
+  </h2>
+
+  <!-- Contenedor de filtros -->
+  <div class="filtro-container">
+    <!-- Campo de búsqueda -->
+    <input type="text" [(ngModel)]="filtro" (input)="filtrarProyectos()" placeholder="Buscar por nombre del proyecto">
+
+    <!-- Menú desplegable del ámbito -->
+    <select [(ngModel)]="ambitoSeleccionado" (change)="actualizarFiltroAmbito($event)">
+      <option *ngFor="let ambito of ambitosDisponibles" [value]="ambito">
+        {{ ambito }}
+      </option>
+    </select>
+
+    <!-- Menú desplegable del tipo de proyecto -->
+    <select [(ngModel)]="tipoProyectoSeleccionado" (change)="actualizarFiltroTipoProyecto($event)">
+      <option *ngFor="let tipo of tiposProyectoDisponibles" [value]="tipo">
+        {{ tipo }}
+      </option>
+    </select>
+
+    <!-- Filtro de fechas -->
+    <input type="date" [(ngModel)]="fechaInicioSeleccionada" (change)="filtrarProyectos()" placeholder="Fecha inicio">
+    <input type="date" [(ngModel)]="fechaFinSeleccionada" (change)="filtrarProyectos()" placeholder="Fecha fin">
+
+    <!-- Filtro de subvención con rango -->
+    <div class="filtro-subvencion">
+      <label>
+        <input type="checkbox" [(ngModel)]="filtroSubvencionActivo" (change)="filtrarProyectos()" [checked]="false">
+        Activar filtro de subvención
+      </label>
+
+      <div *ngIf="filtroSubvencionActivo">
+        <!-- Rango mínimo -->
+        <div>
+          <label for="minSubvencion">Mínimo: {{ minGrantSeleccionado | number }}</label>
+          <input type="range" id="minSubvencion" [value]="minGrantSeleccionado" [min]="minGrant" [max]="maxGrant"
+            (input)="actualizarMinGrant($event)">
+        </div>
+
+        <!-- Rango máximo -->
+        <div>
+          <label for="maxSubvencion">Máximo: {{ maxGrantSeleccionado | number }}</label>
+          <input type="range" id="maxSubvencion" [value]="maxGrantSeleccionado" [min]="minGrant" [max]="maxGrant"
+            (input)="actualizarMaxGrant($event)">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mensaje de error -->
+  <div *ngIf="errorMessage" class="error-message">
+    {{ errorMessage }}
+  </div>
+
+  <!-- Tabla de proyectos -->
+  <table *ngIf="!isLoading && !errorMessage" class="table">
+    <thead>
+      <tr>
+        <th>Identificador</th>
+        <th>Ámbito</th>
+        <th>Nombre del Proyecto</th>
+        <th>Subvención</th>
+        <th>Más información</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let proyecto of proyectosPaginados">
+        <td>{{ proyecto.projectIdentifier || 'No disponible' }}</td>
+        <td>{{ proyecto.ambito || 'No disponible' }}</td>
+        <td>{{ proyecto.nombre || 'No disponible' }}</td>
+        <td>{{ proyecto.grantNumber | number:'1.2-2':'es-ES' }} €</td>
+        <td>
+          <button (click)="verDetallesProyecto(proyecto.projectIdentifier)">Conocer</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- Indicador de carga -->
+  <div *ngIf="isLoading && !errorMessage" class="loading-container">
+    <fa-icon [icon]="['fas','spinner']" class="fa-spin spinner-icon"></fa-icon>
+    <p class="loading-text">Cargando proyectos...</p>
+  </div>
+
+  <!-- Botones de paginación -->
+  <div class="pagination">
+    <button (click)="paginate('previous')" [disabled]="offset === 0 || isLoading">Página anterior</button>
+    <button (click)="paginate('next')" [disabled]="!canGoNextPage || isLoading">Siguiente página</button>
+  </div>
+</div>
