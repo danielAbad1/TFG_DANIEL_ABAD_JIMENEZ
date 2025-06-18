@@ -30,25 +30,26 @@
     <input type="date" [(ngModel)]="fechaFinSeleccionada" (change)="filtrarProyectos()" placeholder="Fecha fin">
 
     <!-- Filtro de subvención con rango -->
+    <!-- Filtro de subvención con rango numérico -->
     <div class="filtro-subvencion">
       <label>
-        <input type="checkbox" [(ngModel)]="filtroSubvencionActivo" (change)="filtrarProyectos()" [checked]="false">
+        <input type="checkbox" [(ngModel)]="filtroSubvencionActivo" (change)="filtrarProyectos()">
         Activar filtro de subvención
       </label>
 
       <div *ngIf="filtroSubvencionActivo">
-        <!-- Rango mínimo -->
+        <!-- Input numérico mínimo -->
         <div>
-          <label for="minSubvencion">Mínimo: {{ minGrantSeleccionado | number }}</label>
-          <input type="range" id="minSubvencion" [value]="minGrantSeleccionado" [min]="minGrant" [max]="maxGrant"
-            (input)="actualizarMinGrant($event)">
+          <label for="minGrantInput">Mínimo (€):</label>
+          <input id="minGrantInput" type="number" [(ngModel)]="minGrantSeleccionado" [min]="minGrant" [max]="maxGrant"
+            (ngModelChange)="onMinGrantChange($event)" />
         </div>
 
-        <!-- Rango máximo -->
+        <!-- Input numérico máximo -->
         <div>
-          <label for="maxSubvencion">Máximo: {{ maxGrantSeleccionado | number }}</label>
-          <input type="range" id="maxSubvencion" [value]="maxGrantSeleccionado" [min]="minGrant" [max]="maxGrant"
-            (input)="actualizarMaxGrant($event)">
+          <label for="maxGrantInput">Máximo (€):</label>
+          <input id="maxGrantInput" type="number" [(ngModel)]="maxGrantSeleccionado" [min]="minGrant" [max]="maxGrant"
+            (ngModelChange)="onMaxGrantChange($event)" />
         </div>
       </div>
     </div>

@@ -380,52 +380,56 @@ export class SparqlService {
 
   getProyectosInvestigacion(): Observable<any> {
     const query = `
-      PREFIX foaf: <http://xmlns.com/foaf/0.1/>
-      PREFIX ou: <http://opendata.unex.es/def/ontouniversidad#>
-      PREFIX dcterms: <http://purl.org/dc/terms/>
-      PREFIX frapo: <http://purl.org/cerif/frapo/>
+      PREFIX foaf:   <http://xmlns.com/foaf/0.1/>
+      PREFIX ou:     <http://opendata.unex.es/def/ontouniversidad#>
+      PREFIX frapo:  <http://purl.org/cerif/frapo/>
       PREFIX swrcfe: <http://www.morelab.deusto.es/ontologies/swrcfe#>
-
-      SELECT ?projectIdentifier ?ambito ?nombre ?grantNumber ?projectType ?startDate ?endDate
-        WHERE {
-          ?proyecto a <http://vivoweb.org/ontology/core#ResearchProject>;
-                    foaf:name ?nombre.
-                    
-          FILTER (
-            !CONTAINS(LCASE(?nombre), "adenda") && !CONTAINS(LCASE(?nombre), "no valido")
-          )
-          OPTIONAL { ?proyecto ou:ambitoProyecto ?ambito. }
-          OPTIONAL { ?proyecto frapo:hasProjectIdentifier ?projectIdentifier. }
-          OPTIONAL { ?proyecto swrcfe:projectType ?projectType. }
-          OPTIONAL { ?proyecto frapo:hasStartDate ?startDate. }
-          OPTIONAL { ?proyecto frapo:hasEndDate ?endDate. }
-  
-          OPTIONAL {
-            ?grant a frapo:Grant;
-                   frapo:hasGrantNumber ?grantNumber;
-                   frapo:funds ?proyecto.
-          }
-        }
-        ORDER BY ?nombre
-    `;
-
-    const params = new HttpParams().set('query', query);
-    const headers = { Accept: 'application/sparql-results+json' };
-
-    return this.http.get(this.endpoint, { params, headers });
-  }
-
-  getTotalProyectos(): Observable<any> {
-    const query = `
-      PREFIX foaf: <http://xmlns.com/foaf/0.1/>
-      PREFIX ou: <http://opendata.unex.es/def/ontouniversidad#>
-      PREFIX frapo: <http://purl.org/cerif/frapo/>
-  
-      SELECT (COUNT(DISTINCT ?proyecto) AS ?totalResults)
+      
+      SELECT DISTINCT
+        ?projectIdentifier
+        ?ambito
+        ?nombre
+        ?grantNumber
+        ?projectType
+        ?startDate
+        ?endDate
       WHERE {
-        ?proyecto a <http://vivoweb.org/ontology/core#ResearchProject>;
-                  foaf:name ?nombre.
+        # Datos básicos de cada proyecto
+        ?proyecto a <http://vivoweb.org/ontology/core#ResearchProject> ;
+                  foaf:name            ?nombre .
+      
+        FILTER (
+          !CONTAINS(LCASE(?nombre), "adenda") &&
+          !CONTAINS(LCASE(?nombre), "no valido")
+        )
+      
+        OPTIONAL { ?proyecto ou:ambitoProyecto        ?ambito. }
+        OPTIONAL { ?proyecto frapo:hasProjectIdentifier ?projectIdentifier. }
+        OPTIONAL { ?proyecto swrcfe:projectType        ?projectType. }
+        OPTIONAL { ?proyecto frapo:hasStartDate        ?startDate. }
+        OPTIONAL { ?proyecto frapo:hasEndDate          ?endDate. }
+        OPTIONAL {
+          ?grant a frapo:Grant ;
+                 frapo:hasGrantNumber  ?grantNumber ;
+                 frapo:funds           ?proyecto .
+        }
+      
+        # Solo proyectos con al menos un AssignedPerson de la Politécnica
+        ?assignedPerson a swrcfe:AssignedPerson ;
+                        swrcfe:project ?proyecto ;
+                        swrcfe:role    ?role .
+        ?personal swrcfe:assignedTo    ?assignedPerson ;
+                  foaf:name            ?personalName ;
+                  ou:adscritoACentro   ?centro .
+        ?centro   a ou:Centro ;
+                  foaf:name           "Escuela Politécnica" .
+      
+        FILTER(
+          LCASE(?role) = "investigador principal" ||
+          LCASE(?role) = "investigador"
+        )
       }
+      ORDER BY ?nombre
     `;
 
     const params = new HttpParams().set('query', query);

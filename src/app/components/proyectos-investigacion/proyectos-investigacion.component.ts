@@ -10,7 +10,11 @@ import {
   FaIconLibrary,
   FontAwesomeModule,
 } from '@fortawesome/angular-fontawesome';
-import { faArrowLeft, faHome, faSpinner } from '@fortawesome/free-solid-svg-icons';
+import {
+  faArrowLeft,
+  faHome,
+  faSpinner,
+} from '@fortawesome/free-solid-svg-icons';
 import { FormsModule } from '@angular/forms';
 import { ProyectoInterface } from '../../interfaces/proyectosInvestigacionInterface';
 
@@ -48,8 +52,8 @@ export class ProyectosInvestigacionComponent
 
   minGrant: number = 0;
   maxGrant: number = 100000;
-  minGrantSeleccionado: number = 0;
-  maxGrantSeleccionado: number = this.maxGrant;
+  minGrantSeleccionado: number | null = null;
+  maxGrantSeleccionado: number | null = null;
   filtroSubvencionActivo: boolean = false;
 
   constructor(
@@ -67,20 +71,24 @@ export class ProyectosInvestigacionComponent
     this.loadTodosProyectos();
   }
 
-  actualizarMinGrant(event: any) {
-    this.minGrantSeleccionado = parseFloat(event.target.value);
+  onMinGrantChange(value: number) {
+    this.minGrantSeleccionado = value;
     this.validarRangoSubvencion();
     this.filtrarProyectos();
   }
 
-  actualizarMaxGrant(event: any) {
-    this.maxGrantSeleccionado = parseFloat(event.target.value);
+  onMaxGrantChange(value: number) {
+    this.maxGrantSeleccionado = value;
     this.validarRangoSubvencion();
     this.filtrarProyectos();
   }
 
   validarRangoSubvencion() {
-    if (this.minGrantSeleccionado > this.maxGrantSeleccionado) {
+    if (
+      this.minGrantSeleccionado !== null &&
+      this.maxGrantSeleccionado !== null &&
+      this.minGrantSeleccionado > this.maxGrantSeleccionado
+    ) {
       this.maxGrantSeleccionado = this.minGrantSeleccionado;
     }
   }
@@ -208,16 +216,24 @@ export class ProyectosInvestigacionComponent
   }
 
   cumpleFiltroSubvencion(proyecto: ProyectoInterface): boolean {
-    if (!this.filtroSubvencionActivo) {
-      return true;
+    if (!this.filtroSubvencionActivo) return true;
+
+    const grant = proyecto.grantNumber ?? 0;
+
+    if (
+      this.minGrantSeleccionado !== null &&
+      grant < this.minGrantSeleccionado
+    ) {
+      return false;
     }
 
-    return (
-      proyecto.grantNumber !== null &&
-      proyecto.grantNumber !== undefined &&
-      proyecto.grantNumber >= this.minGrantSeleccionado &&
-      proyecto.grantNumber <= this.maxGrantSeleccionado
-    );
+    if (
+      this.maxGrantSeleccionado !== null &&
+      grant > this.maxGrantSeleccionado
+    ) {
+      return false;
+    }
+    return true;
   }
 
   actualizarPaginacion() {

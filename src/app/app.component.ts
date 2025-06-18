@@ -1,5 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { Router, RouterOutlet , ActivatedRoute, NavigationEnd } from '@angular/router';
+import {
+  Router,
+  RouterOutlet,
+  ActivatedRoute,
+  NavigationEnd,
+} from '@angular/router';
 import { Title } from '@angular/platform-browser';
 import { filter, map, mergeMap } from 'rxjs/operators';
 

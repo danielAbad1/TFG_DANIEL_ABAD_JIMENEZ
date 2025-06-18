@@ -92,36 +92,6 @@ h2 {
   color: #333;
 }
 
-/* Sliders */
-.filtro-subvencion input[type="range"] {
-  width: 250px;
-  appearance: none;
-  background: #e9ecef;
-  height: 6px;
-  border-radius: 5px;
-  outline: none;
-  transition: background 0.3s ease-in-out;
-}
-
-.filtro-subvencion input[type="range"]:hover {
-  background: #007bff;
-}
-
-.filtro-subvencion input[type="range"]::-webkit-slider-thumb {
-  appearance: none;
-  width: 18px;
-  height: 18px;
-  background: #007bff;
-  border-radius: 50%;
-  cursor: pointer;
-  transition: 0.3s ease-in-out;
-  border: 2px solid #ffffff;
-}
-
-.filtro-subvencion input[type="range"]::-webkit-slider-thumb:hover {
-  background: #0056b3;
-}
-
 .table {
   width: 100%;
   border-collapse: collapse;
@@ -267,7 +237,6 @@ button[disabled] {
 
 /* =======================
    BOTONES DE PAGINACIÓN
-   (por si aún no los tienes)
    ======================= */
 .pagination {
   margin-top: 20px;
