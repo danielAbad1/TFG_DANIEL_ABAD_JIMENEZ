@@ -83,41 +83,62 @@ export class SparqlService {
    */
   getDetallesInvestigador(nombre: string): Observable<any> {
     const query = `
-      PREFIX foaf: <http://xmlns.com/foaf/0.1/>
-      PREFIX vivo: <http://vivoweb.org/ontology/core#>
-      PREFIX ou: <http://opendata.unex.es/def/ontouniversidad#>
+    PREFIX foaf:   <http://xmlns.com/foaf/0.1/>
+    PREFIX vivo:   <http://vivoweb.org/ontology/core#>
+    PREFIX ou:     <http://opendata.unex.es/def/ontouniversidad#>
 
-      SELECT ?nombre ?lastName ?scopusId ?orcidId ?dialnetId ?indiceHscopus ?categoriaPDI ?nombreDepartamento 
-      (GROUP_CONCAT(DISTINCT ?nombreArea; separator=", ") AS ?areas) 
+    SELECT
+      ?nombre
+      ?lastName
+      ?scopusId
+      ?orcidId
+      ?dialnetId
+      ?indiceHscopus
+      ?categoriaPDI
+      ?nombreDepartamento
+      (GROUP_CONCAT(DISTINCT ?nombreArea; separator=", ") AS ?areas)
       (GROUP_CONCAT(DISTINCT ?nombreGrupo; separator=", ") AS ?gruposInvestigacion)
-      
-      WHERE {
-        ?centro a ou:Centro;
-          foaf:name "Escuela Politécnica".
+    WHERE {
+      # Buscamos por nombre (regex case-insensitive)
+      ?persona foaf:name      ?nombre;
+               foaf:lastName  ?lastName.
+      FILTER (regex(?nombre, "${nombre}", "i"))
 
-        ?persona ou:adscritoACentro ?centro;
-          ou:adscritoADepartamento ?departamento;
-          foaf:name ?nombre;
-          foaf:lastName ?lastName.
-
-        FILTER(regex(?nombre, "${nombre}", "i")) 
-
-        OPTIONAL { ?persona vivo:scopusId ?scopusId. }
-        OPTIONAL { ?persona vivo:orcidId ?orcidId. }
-        OPTIONAL { ?persona ou:dialnetId ?dialnetId. }
-        OPTIONAL { ?persona ou:indiceHscopus ?indiceHscopus. }
-        OPTIONAL { ?persona ou:categoriaPDI ?categoriaPDI. }
-        OPTIONAL { 
-          ?persona ou:perteneceAGrupoInvestigacion ?grupo.    
-          ?grupo foaf:name ?nombreGrupo.
-        }
-
+      # Departamento es opcional
+      OPTIONAL {
+        ?persona ou:adscritoADepartamento ?departamento.
         ?departamento foaf:name ?nombreDepartamento.
+      }
+
+      # IDs y metadatos
+      OPTIONAL { ?persona vivo:scopusId    ?scopusId. }
+      OPTIONAL { ?persona vivo:orcidId     ?orcidId. }
+      OPTIONAL { ?persona ou:dialnetId     ?dialnetId. }
+      OPTIONAL { ?persona ou:indiceHscopus ?indiceHscopus. }
+      OPTIONAL { ?persona ou:categoriaPDI  ?categoriaPDI. }
+
+      # Áreas de conocimiento (puede haber varias)
+      OPTIONAL {
         ?persona ou:imparteDocenciaEnArea ?area.
         ?area foaf:name ?nombreArea.
       }
-      GROUP BY ?nombre ?lastName ?scopusId ?orcidId ?dialnetId ?indiceHscopus ?categoriaPDI ?nombreDepartamento
-    `;
+
+      # Grupos de investigación (puede haber varios)
+      OPTIONAL {
+        ?persona ou:perteneceAGrupoInvestigacion ?grupo.
+        ?grupo foaf:name ?nombreGrupo.
+      }
+    }
+    GROUP BY
+      ?nombre
+      ?lastName
+      ?scopusId
+      ?orcidId
+      ?dialnetId
+      ?indiceHscopus
+      ?categoriaPDI
+      ?nombreDepartamento
+  `;
 
     const params = new HttpParams().set('query', query);
     const headers = { Accept: 'application/sparql-results+json' };
@@ -429,7 +450,6 @@ export class SparqlService {
           LCASE(?role) = "investigador"
         )
       }
-      ORDER BY ?nombre
     `;
 
     const params = new HttpParams().set('query', query);

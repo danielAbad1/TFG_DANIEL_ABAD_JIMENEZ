@@ -26,15 +26,14 @@
         </ng-container>
       </div>
 
-      <div class="card-section" *ngIf="proyecto.assignedPersons && proyecto.assignedPersons.length > 0">
+      <div class="card-section" *ngIf="proyecto.assignedPersons?.length">
         <h4>Personas Asignadas</h4>
         <ul class="assigned-persons-grid">
-          <li *ngFor="let person of proyecto.assignedPersons" class="person-card"
-            (click)="person.isPolitecnica && verDetallesInvestigador(person.personalName)" [ngClass]="{
-                'principal-card': person.role.toLowerCase().trim() === 'investigador principal',
-                'not-politecnica': !person.isPolitecnica,
-                'clickable-person': person.isPolitecnica
-              }">
+          <li *ngFor="let person of proyecto.assignedPersons" class="person-card clickable-person"
+            (click)="verDetallesInvestigador(person.personalName)" [ngClass]="{
+        'principal-card': person.role.toLowerCase().trim() === 'investigador principal',
+        'not-politecnica': !person.isPolitecnica
+      }">
             <div class="person-name">
               {{ person.personalName }}
               <span *ngIf="person.role.toLowerCase().trim() === 'investigador principal'" class="badge-principal">
@@ -53,7 +52,6 @@
     </div>
   </div>
 
-  <!-- Spinner y mensaje de carga / posible mensaje de error -->
   <ng-template #loadingOrError>
     <div *ngIf="errorMessage; else loadingProyecto" class="no-proyecto">
       <p>{{ errorMessage }}</p>

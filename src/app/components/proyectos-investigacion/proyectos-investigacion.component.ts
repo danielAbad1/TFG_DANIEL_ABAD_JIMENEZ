@@ -93,6 +93,12 @@ export class ProyectosInvestigacionComponent
     }
   }
 
+  // Convierte "DD/MM/YYYY" → timestamp
+  parseEuropeanDate(d: string): number {
+    const [day, month, year] = d.split('/').map((s) => Number(s));
+    return new Date(year, month - 1, day).getTime();
+  }
+
   /**
    * Carga todos los proyectos sin paginación para poder filtrarlos en memoria.
    */
@@ -111,6 +117,12 @@ export class ProyectosInvestigacionComponent
             grantNumber: Number(proyecto.grantNumber) || 0,
           })
         );
+
+        this.proyectos.sort((a, b) => {
+          const ta = a.startDate ? this.parseEuropeanDate(a.startDate) : 0;
+          const tb = b.startDate ? this.parseEuropeanDate(b.startDate) : 0;
+          return tb - ta;
+        });
 
         this.proyectosFiltrados = [...this.proyectos];
 
