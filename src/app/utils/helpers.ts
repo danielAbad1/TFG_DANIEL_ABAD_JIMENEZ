@@ -326,11 +326,15 @@ export function groupProjectPersons(
     }
 
     if (item.personalName && item.role) {
+      const lit = item.personalActual?.value ?? '';
+      const isActual = lit === '1' || lit.toLowerCase() === 'true';
       groupedProjects[projectName].assignedPersons.push({
         personalName: item.personalName.value,
         role: item.role.value,
-        scopusId: item.scopusId?.value || undefined,
-        isPolitecnica: false, // Inicializamos en false
+        scopusId: item.scopusId?.value,
+        isPolitecnica: false,
+        personalCentro: item.personalCentro?.value,
+        personalActual: isActual,
       });
     }
   });

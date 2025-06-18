@@ -3,6 +3,8 @@ export interface AssignedPersonExtended {
   role: string;
   scopusId?: string;
   isPolitecnica: boolean;
+  personalCentro?: string;
+  personalActual: string;
 }
 
 export interface DetallesProyectoInvestigacionInterface {

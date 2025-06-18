@@ -21,11 +21,12 @@ import {
   DetallesProyectoInvestigacionInterface,
   AssignedPersonExtended,
 } from '../../interfaces/detallesProyectosInterface';
+import { AcronymPipe } from '../../utils/acronym/acronym.pipe';
 
 @Component({
   selector: 'app-detalles-proyectos-investigacion',
   standalone: true,
-  imports: [CommonModule, FontAwesomeModule],
+  imports: [CommonModule, FontAwesomeModule, AcronymPipe],
   templateUrl: './detalles-proyectos-investigacion.component.html',
   styleUrls: ['./detalles-proyectos-investigacion.component.css'],
 })

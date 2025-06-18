@@ -31,15 +31,37 @@
         <ul class="assigned-persons-grid">
           <li *ngFor="let person of proyecto.assignedPersons" class="person-card clickable-person"
             (click)="verDetallesInvestigador(person.personalName)" [ngClass]="{
-        'principal-card': person.role.toLowerCase().trim() === 'investigador principal',
-        'not-politecnica': !person.isPolitecnica
-      }">
+          'principal-card': person.role.toLowerCase().trim() === 'investigador principal'
+        }">
+
             <div class="person-name">
               {{ person.personalName }}
-              <span *ngIf="person.role.toLowerCase().trim() === 'investigador principal'" class="badge-principal">
+
+              <!-- Badge de Principal -->
+              <span *ngIf="person.role.toLowerCase().trim() === 'investigador principal'" class="badge badge-principal">
                 Principal
               </span>
+
+              <!-- Badge de Centro (solo si está activo) -->
+              <ng-container *ngIf="person.personalActual">
+                <span *ngIf="person.personalCentro; else unknownBadge" class="badge" [ngClass]="{
+            'badge-politecnica': person.isPolitecnica,
+            'badge-otro': !person.isPolitecnica
+          }" [title]="person.personalCentro">
+                  {{ person.personalCentro | acronym }}
+                </span>
+                <ng-template #unknownBadge>
+                  <span class="badge badge-desconocido">Desconocido</span>
+                </ng-template>
+              </ng-container>
+
+              <!-- Badge de Baja (solo si está de baja) -->
+              <span *ngIf="!person.personalActual" class="badge badge-baja">
+                Baja
+              </span>
             </div>
+
+
             <div class="person-detail">
               <span class="field-label">Rol:</span> {{ person.role }}
             </div>

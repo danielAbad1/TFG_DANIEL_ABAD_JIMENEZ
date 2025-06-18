@@ -25,7 +25,8 @@
   cursor: pointer;
 }
 
-.back-arrow:hover, .home-icon:hover {
+.back-arrow:hover,
+.home-icon:hover {
   color: #0056b3;
 }
 
@@ -140,17 +141,57 @@
 }
 
 /* ========================
-   ESTILO PARA BADGE “PRINCIPAL”
+   ESTILO PARA BADGES
    ======================== */
+.badge {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: bold;
+  padding: 0.1rem 0.3rem;
+  border-radius: 0.25rem;
+  vertical-align: middle;
+  margin-left: 0.5rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1;
+}
+
+/* Badge Principal */
 .badge-principal {
   background-color: #ffc107;
   color: #212529;
-  font-size: 0.7rem;
+}
+
+/* Badge Centro */
+.badge-politecnica {
+  background-color: #0d47a1;
+  color: #fff;
+}
+
+.badge-otro {
+  background-color: #388e3c;
+  color: #fff;
+}
+
+.badge-baja {
+  background-color: #dc3545;
+  color: #fff;
+  font-size: 0.75rem;
   font-weight: bold;
   border-radius: 0.25rem;
-  padding: 0.1rem 0.3rem;
+  padding: 0.2rem 0.4rem;
   margin-left: 0.5rem;
   vertical-align: middle;
+}
+
+.badge-desconocido {
+  background-color: #fd7e14;
+  color: #fff;
+}
+
+.person-card.clickable-person {
+  cursor: pointer;
 }
 
 /* ======================================
@@ -177,7 +218,7 @@
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  padding: 2rem 0;  /* espacio vertical para centrar mejor */
+  padding: 2rem 0; /* espacio vertical para centrar mejor */
 }
 
 .spinner-icon {

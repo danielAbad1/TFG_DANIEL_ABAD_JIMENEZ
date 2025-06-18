@@ -95,40 +95,43 @@ export class SparqlService {
       ?dialnetId
       ?indiceHscopus
       ?categoriaPDI
+      ?nombreCentro
       ?nombreDepartamento
       (GROUP_CONCAT(DISTINCT ?nombreArea; separator=", ") AS ?areas)
       (GROUP_CONCAT(DISTINCT ?nombreGrupo; separator=", ") AS ?gruposInvestigacion)
-    WHERE {
-      # Buscamos por nombre (regex case-insensitive)
-      ?persona foaf:name      ?nombre;
-               foaf:lastName  ?lastName.
+    
+      WHERE {
+      ?persona foaf:name ?nombre;
+               foaf:lastName ?lastName.
       FILTER (regex(?nombre, "${nombre}", "i"))
 
-      # Departamento es opcional
+      OPTIONAL {
+        ?persona ou:adscritoACentro ?centro.
+        ?centro foaf:name ?nombreCentro.
+      }
+
       OPTIONAL {
         ?persona ou:adscritoADepartamento ?departamento.
         ?departamento foaf:name ?nombreDepartamento.
       }
 
-      # IDs y metadatos
-      OPTIONAL { ?persona vivo:scopusId    ?scopusId. }
-      OPTIONAL { ?persona vivo:orcidId     ?orcidId. }
-      OPTIONAL { ?persona ou:dialnetId     ?dialnetId. }
+      OPTIONAL { ?persona vivo:scopusId ?scopusId. }
+      OPTIONAL { ?persona vivo:orcidId ?orcidId. }
+      OPTIONAL { ?persona ou:dialnetId ?dialnetId. }
       OPTIONAL { ?persona ou:indiceHscopus ?indiceHscopus. }
-      OPTIONAL { ?persona ou:categoriaPDI  ?categoriaPDI. }
+      OPTIONAL { ?persona ou:categoriaPDI ?categoriaPDI. }
 
-      # Áreas de conocimiento (puede haber varias)
       OPTIONAL {
         ?persona ou:imparteDocenciaEnArea ?area.
         ?area foaf:name ?nombreArea.
       }
 
-      # Grupos de investigación (puede haber varios)
       OPTIONAL {
         ?persona ou:perteneceAGrupoInvestigacion ?grupo.
         ?grupo foaf:name ?nombreGrupo.
       }
     }
+
     GROUP BY
       ?nombre
       ?lastName
@@ -137,12 +140,13 @@ export class SparqlService {
       ?dialnetId
       ?indiceHscopus
       ?categoriaPDI
+      ?nombreCentro
       ?nombreDepartamento
+    ORDER BY ASC(?lastName)
   `;
 
     const params = new HttpParams().set('query', query);
     const headers = { Accept: 'application/sparql-results+json' };
-
     return this.http.get(this.endpoint, { params, headers });
   }
 
@@ -419,11 +423,6 @@ export class SparqlService {
         ?proyecto a <http://vivoweb.org/ontology/core#ResearchProject> ;
                   foaf:name            ?nombre .
       
-        FILTER (
-          !CONTAINS(LCASE(?nombre), "adenda") &&
-          !CONTAINS(LCASE(?nombre), "no valido")
-        )
-      
         OPTIONAL { ?proyecto ou:ambitoProyecto        ?ambito. }
         OPTIONAL { ?proyecto frapo:hasProjectIdentifier ?projectIdentifier. }
         OPTIONAL { ?proyecto swrcfe:projectType        ?projectType. }
@@ -460,48 +459,67 @@ export class SparqlService {
 
   getDetallesProyecto(proyecto: string): Observable<any> {
     const query = `
-      PREFIX foaf: <http://xmlns.com/foaf/0.1/>
-      PREFIX ou: <http://opendata.unex.es/def/ontouniversidad#>
-      PREFIX dcterms: <http://purl.org/dc/terms/>
-      PREFIX frapo: <http://purl.org/cerif/frapo/>
-      PREFIX swrcfe: <http://www.morelab.deusto.es/ontologies/swrcfe#>
+    PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+    PREFIX ou:   <http://opendata.unex.es/def/ontouniversidad#>
+    PREFIX dcterms: <http://purl.org/dc/terms/>
+    PREFIX frapo:   <http://purl.org/cerif/frapo/>
+    PREFIX swrcfe:  <http://www.morelab.deusto.es/ontologies/swrcfe#>
 
-      SELECT DISTINCT ?nombre ?ambito ?entidadFinanciadora ?identifier ?startDate ?endDate ?projectIdentifier ?projectType 
-             ?grantNumber ?assignedPerson ?role ?scopusId ?personalName
-      WHERE {
-        ?proyecto a <http://vivoweb.org/ontology/core#ResearchProject>;
-                  foaf:name ?nombre.
-                  
-        FILTER (STR(?projectIdentifier) = "${proyecto}")
-        
-        OPTIONAL { ?proyecto ou:ambitoProyecto ?ambito. }
-        OPTIONAL { ?proyecto ou:entidadFinanciadora ?entidadFinanciadora. }
-        OPTIONAL { ?proyecto dcterms:identifier ?identifier. }
-        OPTIONAL { ?proyecto frapo:hasStartDate ?startDate. }
-        OPTIONAL { ?proyecto frapo:hasEndDate ?endDate. }
-        OPTIONAL { ?proyecto frapo:hasProjectIdentifier ?projectIdentifier. }
-        OPTIONAL { ?proyecto swrcfe:projectType ?projectType. }
+    SELECT DISTINCT
+      ?nombre
+      ?ambito
+      ?entidadFinanciadora
+      ?identifier
+      ?startDate
+      ?endDate
+      ?projectIdentifier
+      ?projectType
+      ?grantNumber
+      ?assignedPerson
+      ?role
+      ?scopusId
+      ?personalName
+      ?personalCentro
+      ?personalActual
+    WHERE {
+      ?proyecto a <http://vivoweb.org/ontology/core#ResearchProject>;
+                foaf:name ?nombre.
+      FILTER (STR(?projectIdentifier) = "${proyecto}")
 
+      OPTIONAL { ?proyecto ou:ambitoProyecto ?ambito. }
+      OPTIONAL { ?proyecto ou:entidadFinanciadora ?entidadFinanciadora. }
+      OPTIONAL { ?proyecto dcterms:identifier ?identifier. }
+      OPTIONAL { ?proyecto frapo:hasStartDate ?startDate. }
+      OPTIONAL { ?proyecto frapo:hasEndDate ?endDate. }
+      OPTIONAL { ?proyecto frapo:hasProjectIdentifier ?projectIdentifier. }
+      OPTIONAL { ?proyecto swrcfe:projectType ?projectType. }
+
+      OPTIONAL {
+        ?grant a frapo:Grant;
+               frapo:hasGrantNumber ?grantNumber;
+               frapo:funds ?proyecto.
+      }
+
+      OPTIONAL {
+        ?assignedPerson a swrcfe:AssignedPerson;
+                        swrcfe:project ?proyecto;
+                        swrcfe:role ?role.
+
+        ?personal swrcfe:assignedTo ?assignedPerson;
+                  foaf:name ?personalName.
+
+        OPTIONAL { ?personal vivo:scopusId ?scopusId. }
         OPTIONAL {
-          ?grant a frapo:Grant;
-                 frapo:hasGrantNumber ?grantNumber;
-                 frapo:funds ?proyecto.
+          ?personal ou:adscritoACentro ?centroP.
+          ?centroP foaf:name ?personalCentro.
         }
-
         OPTIONAL {
-          ?assignedPerson a swrcfe:AssignedPerson;
-                          swrcfe:project ?proyecto;
-                          swrcfe:role ?role.
-
-          ?personal swrcfe:assignedTo ?assignedPerson;
-                 foaf:name ?personalName. 
-         OPTIONAL {  
-             ?personal vivo:scopusId ?scopusId.  
-          }
+          ?personal ou:personalActual ?personalActual.
         }
       }
-      ORDER BY ?nombre
-    `;
+    }
+    ORDER BY ?nombre
+  `;
 
     const params = new HttpParams().set('query', query);
     const headers = { Accept: 'application/sparql-results+json' };

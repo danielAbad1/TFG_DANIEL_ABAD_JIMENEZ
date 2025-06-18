@@ -23,7 +23,10 @@
           <span class="field-label">Categoría PDI:</span> {{ detallesInvestigador[0].categoriaPDI?.value }}
         </div>
         <div class="card-field">
-          <span class="field-label">Departamento:</span> {{ detallesInvestigador[0].nombreDepartamento.value }}
+          <span class="field-label">Centro:</span> {{ detallesInvestigador[0].nombreCentro?.value | uppercase }}
+        </div>
+        <div class="card-field">
+          <span class="field-label">Departamento:</span> {{ detallesInvestigador[0].nombreDepartamento?.value }}
         </div>
         <div class="card-field">
           <span class="field-label">Áreas de conocimiento:</span>
