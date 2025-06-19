@@ -159,18 +159,6 @@ a:hover {
 }
 
 /* ===========================
-   Autor no perteneciente
-   =========================== */
-.author-plain {
-  display: inline-block;
-  padding: 4px 8px;
-  border-radius: 4px;
-  color: #6c757d;
-  cursor: not-allowed;
-  background-color: #f1f1f1;
-}
-
-/* ===========================
    Mensaje “no autores”
    =========================== */
 .no-autores {

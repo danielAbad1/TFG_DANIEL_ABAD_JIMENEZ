@@ -6,7 +6,7 @@ import {
   FaIconLibrary,
   FontAwesomeModule,
 } from '@fortawesome/angular-fontawesome';
-import { faArrowLeft, faHome } from '@fortawesome/free-solid-svg-icons';
+import { faArrowLeft, faHome, faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { InvestigadorInterface } from '../../interfaces/investigadorInterface';
 import { FormsModule } from '@angular/forms';
 import { NavigationService } from '../../services/navigation/navigation.service';
@@ -39,7 +39,7 @@ export class InvestigadoresComponent
     library: FaIconLibrary
   ) {
     super(navigationService);
-    library.addIcons(faArrowLeft, faHome);
+    library.addIcons(faArrowLeft, faHome, faSpinner);
   }
 
   override ngOnInit(): void {

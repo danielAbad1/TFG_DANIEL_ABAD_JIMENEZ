@@ -10,6 +10,29 @@ export class SparqlService {
 
   constructor(private http: HttpClient) {}
 
+  private readonly defaultGetHeaders = {
+    Accept: 'application/sparql-results+json',
+  };
+  private readonly defaultPostHeaders = {
+    'Content-Type': 'application/x-www-form-urlencoded',
+    Accept: 'application/sparql-results+json',
+  };
+
+  private postQuery(query: string): Observable<any> {
+    const body = new HttpParams().set('query', query);
+    return this.http.post(this.endpoint, body, {
+      headers: this.defaultPostHeaders,
+    });
+  }
+
+  private getQuery(query: string): Observable<any> {
+    const params = new HttpParams().set('query', query);
+    return this.http.get(this.endpoint, {
+      params,
+      headers: this.defaultGetHeaders,
+    });
+  }
+
   /**
    * Obtiene los investigadores de la Escuela Politécnica.
    * @returns Un Observable con los resultados de la consulta.
@@ -41,10 +64,7 @@ export class SparqlService {
       ORDER BY ASC(?lastName)
     `;
 
-    const params = new HttpParams().set('query', query);
-    const headers = { Accept: 'application/sparql-results+json' };
-
-    return this.http.get(this.endpoint, { params, headers });
+    return this.getQuery(query);
   }
 
   /**
@@ -70,17 +90,9 @@ export class SparqlService {
       }
     `;
 
-    const params = new HttpParams().set('query', query);
-    const headers = { Accept: 'application/sparql-results+json' };
-
-    return this.http.get(this.endpoint, { params, headers });
+    return this.getQuery(query);
   }
 
-  /**
-   * Obtiene los detalles de un investigador en particular, utilizando su nombre para realizar la búsqueda.
-   * @param nombre El nombre del investigador para realizar la búsqueda.
-   * @returns Un Observable con los detalles del investigador.
-   */
   getDetallesInvestigador(nombre: string): Observable<any> {
     const query = `
     PREFIX foaf:   <http://xmlns.com/foaf/0.1/>
@@ -96,24 +108,24 @@ export class SparqlService {
       ?indiceHscopus
       ?categoriaPDI
       ?nombreCentro
+      ?campusCentro
       ?nombreDepartamento
+      ?personalActual
       (GROUP_CONCAT(DISTINCT ?nombreArea; separator=", ") AS ?areas)
-      (GROUP_CONCAT(DISTINCT ?nombreGrupo; separator=", ") AS ?gruposInvestigacion)
-    
-      WHERE {
+      ?nombreGrupo
+    WHERE {
       ?persona foaf:name ?nombre;
                foaf:lastName ?lastName.
       FILTER (regex(?nombre, "${nombre}", "i"))
 
-      OPTIONAL {
+      OPTIONAL { 
         ?persona ou:adscritoACentro ?centro.
         ?centro foaf:name ?nombreCentro.
+        OPTIONAL { ?centro ou:campusUniversitario ?campusCentro. }
       }
 
-      OPTIONAL {
-        ?persona ou:adscritoADepartamento ?departamento.
-        ?departamento foaf:name ?nombreDepartamento.
-      }
+      OPTIONAL { ?persona ou:adscritoADepartamento ?departamento.
+                 ?departamento foaf:name ?nombreDepartamento. }
 
       OPTIONAL { ?persona vivo:scopusId ?scopusId. }
       OPTIONAL { ?persona vivo:orcidId ?orcidId. }
@@ -130,6 +142,8 @@ export class SparqlService {
         ?persona ou:perteneceAGrupoInvestigacion ?grupo.
         ?grupo foaf:name ?nombreGrupo.
       }
+
+      OPTIONAL { ?persona ou:personalActual ?personalActual. }
     }
 
     GROUP BY
@@ -141,13 +155,14 @@ export class SparqlService {
       ?indiceHscopus
       ?categoriaPDI
       ?nombreCentro
+      ?campusCentro
       ?nombreDepartamento
+      ?personalActual
+      ?nombreGrupo
     ORDER BY ASC(?lastName)
   `;
 
-    const params = new HttpParams().set('query', query);
-    const headers = { Accept: 'application/sparql-results+json' };
-    return this.http.get(this.endpoint, { params, headers });
+    return this.postQuery(query);
   }
 
   getMayorIndiceH(): Observable<any> {
@@ -170,10 +185,7 @@ export class SparqlService {
       ORDER BY DESC(?indiceH)
     `;
 
-    const params = new HttpParams().set('query', query);
-    const headers = { Accept: 'application/sparql-results+json' };
-
-    return this.http.get(this.endpoint, { params, headers });
+    return this.getQuery(query);
   }
 
   /**
@@ -196,76 +208,66 @@ export class SparqlService {
     }
   `;
 
-    const params = new HttpParams().set('query', query);
-    const headers = { Accept: 'application/sparql-results+json' };
-
-    return this.http.get(this.endpoint, { params, headers });
+    return this.getQuery(query);
   }
 
   getPublicacionesPorAutor(nombreAutor: string): Observable<any> {
     const query = `
-      PREFIX foaf: <http://xmlns.com/foaf/0.1/>
-      PREFIX ou: <http://opendata.unex.es/def/ontouniversidad#>
-      PREFIX dcterms: <http://purl.org/dc/terms/>
-      PREFIX fabio: <http://purl.org/spar/fabio/>
+    PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+    PREFIX ou: <http://opendata.unex.es/def/ontouniversidad#>
+    PREFIX dcterms: <http://purl.org/dc/terms/>
+    PREFIX fabio: <http://purl.org/spar/fabio/>
 
-      SELECT ?year ?titulo ?urlDialnet ?urlScopus
-      WHERE {
-        ?persona foaf:name "${nombreAutor}";
-                 ou:tienePublicacion ?publicacion.
-        ?publicacion dcterms:title ?titulo.
-        OPTIONAL { ?publicacion fabio:hasPublicationYear ?year. }
-        OPTIONAL { ?publicacion ou:urlDialnet ?urlDialnet. }
-        OPTIONAL { ?publicacion ou:urlScopus ?urlScopus. }
-      }
-      ORDER BY ?year
-    `;
-
-    const params = new HttpParams().set('query', query);
-    const headers = { Accept: 'application/sparql-results+json' };
-
-    return this.http.get(this.endpoint, { params, headers });
+    SELECT ?year ?titulo ?urlDialnet ?urlScopus
+    WHERE {
+      ?persona foaf:name "${nombreAutor}";
+               ou:tienePublicacion ?publicacion.
+      ?publicacion dcterms:title ?titulo.
+      OPTIONAL { ?publicacion fabio:hasPublicationYear ?year. }
+      OPTIONAL { ?publicacion ou:urlDialnet ?urlDialnet. }
+      OPTIONAL { ?publicacion ou:urlScopus ?urlScopus. }
+    }
+    ORDER BY ?year
+  `;
+    return this.postQuery(query);
   }
 
   getDetallesPublicacionPorTitulo(publicacionTitle: string): Observable<any> {
     const query = `
-      PREFIX dcterms: <http://purl.org/dc/terms/>
-      PREFIX bibo: <http://purl.org/ontology/bibo/>
-      PREFIX ou: <http://opendata.unex.es/def/ontouniversidad#>
-      PREFIX fabio: <http://purl.org/spar/fabio/>
-      PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+    PREFIX dcterms: <http://purl.org/dc/terms/>
+    PREFIX bibo: <http://purl.org/ontology/bibo/>
+    PREFIX ou: <http://opendata.unex.es/def/ontouniversidad#>
+    PREFIX fabio: <http://purl.org/spar/fabio/>
+    PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+    
+    SELECT ?title ?urlDialnet ?urlScopus ?isbn ?eissn ?tipoPublicacion 
+           ?editorial ?publicadaEnRevista ?bibtex ?hasPublicationYear 
+           ?publisher (GROUP_CONCAT(DISTINCT ?autorNombre; separator=", ") AS ?autores)
+    WHERE {
+      ?publicacion dcterms:title "${publicacionTitle}".
       
-      SELECT ?title ?urlDialnet ?urlScopus ?isbn ?eissn ?tipoPublicacion 
-             ?editorial ?publicadaEnRevista ?bibtex ?hasPublicationYear 
-             ?publisher (GROUP_CONCAT(DISTINCT ?autorNombre; separator=", ") AS ?autores)
-      WHERE {
-        ?publicacion dcterms:title "${publicacionTitle}".
-        
-        ?publicacion dcterms:title ?title.
-      
-        ?persona ou:tienePublicacion ?publicacion.
-        ?persona foaf:name ?autorNombre.
-      
-        OPTIONAL { ?publicacion ou:urlDialnet ?urlDialnet. }
-        OPTIONAL { ?publicacion ou:urlScopus ?urlScopus. }
-        OPTIONAL { ?publicacion bibo:isbn ?isbn. }
-        OPTIONAL { ?publicacion bibo:eissn ?eissn. }
-        OPTIONAL { ?publicacion ou:tipoPublicacion ?tipoPublicacion. }
-        OPTIONAL { ?publicacion ou:editorial ?editorial. }
-        OPTIONAL { ?publicacion ou:publicadaEnRevista ?publicadaEnRevista. }
-        OPTIONAL { ?publicacion ou:tieneBIBTEX ?bibtex. }
-        OPTIONAL { ?publicacion fabio:hasPublicationYear ?hasPublicationYear. }
-        OPTIONAL { ?publicacion dcterms:publisher ?publisher. }
-      }
+      ?publicacion dcterms:title ?title.
+    
+      ?persona ou:tienePublicacion ?publicacion.
+      ?persona foaf:name ?autorNombre.
+    
+      OPTIONAL { ?publicacion ou:urlDialnet ?urlDialnet. }
+      OPTIONAL { ?publicacion ou:urlScopus ?urlScopus. }
+      OPTIONAL { ?publicacion bibo:isbn ?isbn. }
+      OPTIONAL { ?publicacion bibo:eissn ?eissn. }
+      OPTIONAL { ?publicacion ou:tipoPublicacion ?tipoPublicacion. }
+      OPTIONAL { ?publicacion ou:editorial ?editorial. }
+      OPTIONAL { ?publicacion ou:publicadaEnRevista ?publicadaEnRevista. }
+      OPTIONAL { ?publicacion ou:tieneBIBTEX ?bibtex. }
+      OPTIONAL { ?publicacion fabio:hasPublicationYear ?hasPublicationYear. }
+      OPTIONAL { ?publicacion dcterms:publisher ?publisher. }
+    }
 
-      GROUP BY ?title ?urlDialnet ?urlScopus ?isbn ?eissn ?tipoPublicacion 
-        ?editorial ?publicadaEnRevista ?bibtex ?hasPublicationYear ?publisher    
+    GROUP BY ?title ?urlDialnet ?urlScopus ?isbn ?eissn ?tipoPublicacion 
+      ?editorial ?publicadaEnRevista ?bibtex ?hasPublicationYear ?publisher
   `;
 
-    const params = new HttpParams().set('query', query);
-    const headers = { Accept: 'application/sparql-results+json' };
-
-    return this.http.get(this.endpoint, { params, headers });
+    return this.postQuery(query);
   }
 
   getGruposInvestigacion(): Observable<any> {
@@ -289,10 +291,7 @@ export class SparqlService {
       ORDER BY ?nombreGrupo ?lastName
     `;
 
-    const params = new HttpParams().set('query', query);
-    const headers = { Accept: 'application/sparql-results+json' };
-
-    return this.http.get(this.endpoint, { params, headers });
+    return this.getQuery(query);
   }
 
   /**
@@ -324,10 +323,7 @@ export class SparqlService {
     ORDER BY ?nombreGrupo ?lastName
   `;
 
-    const params = new HttpParams().set('query', query);
-    const headers = { Accept: 'application/sparql-results+json' };
-
-    return this.http.get(this.endpoint, { params, headers });
+    return this.getQuery(query);
   }
 
   getTotalGrupos(): Observable<any> {
@@ -351,10 +347,7 @@ export class SparqlService {
       }
     `;
 
-    const params = new HttpParams().set('query', query);
-    const headers = { Accept: 'application/sparql-results+json' };
-
-    return this.http.get(this.endpoint, { params, headers });
+    return this.getQuery(query);
   }
 
   getDetallesGrupoInvestigacion(nombreGrupo: string): Observable<any> {
@@ -366,7 +359,7 @@ export class SparqlService {
       PREFIX ou: <http://opendata.unex.es/def/ontouniversidad#>
   
       SELECT ?name ?coordinador ?coordinadorNombre ?lineaInvestigacion 
-             ?title ?description ?departamentoNombre ?centroNombre
+             ?title ?description ?departamentoNombre ?centroNombre ?campusCentro
       WHERE {
         ?grupo a ou:GrupoInvestigacion;
                foaf:name ?name.
@@ -393,14 +386,12 @@ export class SparqlService {
         OPTIONAL { 
           ?coordinador ou:adscritoACentro ?centro.
           ?centro foaf:name ?centroNombre.
+          OPTIONAL { ?centro ou:campusUniversitario ?campusCentro. }
         }
       }
     `;
 
-    const params = new HttpParams().set('query', query);
-    const headers = { Accept: 'application/sparql-results+json' };
-
-    return this.http.get(this.endpoint, { params, headers });
+    return this.getQuery(query);
   }
 
   getProyectosInvestigacion(): Observable<any> {
@@ -451,10 +442,7 @@ export class SparqlService {
       }
     `;
 
-    const params = new HttpParams().set('query', query);
-    const headers = { Accept: 'application/sparql-results+json' };
-
-    return this.http.get(this.endpoint, { params, headers });
+    return this.postQuery(query);
   }
 
   getDetallesProyecto(proyecto: string): Observable<any> {
@@ -521,10 +509,7 @@ export class SparqlService {
     ORDER BY ?nombre
   `;
 
-    const params = new HttpParams().set('query', query);
-    const headers = { Accept: 'application/sparql-results+json' };
-
-    return this.http.get(this.endpoint, { params, headers });
+    return this.postQuery(query);
   }
 
   getPublicacionesPolitecnica(): Observable<any> {
@@ -554,10 +539,7 @@ export class SparqlService {
       ORDER BY DESC(?year)
     `;
 
-    const params = new HttpParams().set('query', query);
-    const headers = { Accept: 'application/sparql-results+json' };
-
-    return this.http.get(this.endpoint, { params, headers });
+    return this.getQuery(query);
   }
 
   /**
@@ -568,31 +550,28 @@ export class SparqlService {
    */
   getProyectosPorInvestigador(nombreAutor: string): Observable<any> {
     const query = `
-      PREFIX foaf: <http://xmlns.com/foaf/0.1/>
-      PREFIX swrcfe: <http://www.morelab.deusto.es/ontologies/swrcfe#>
-      PREFIX frapo: <http://purl.org/cerif/frapo/>
-  
-      SELECT ?projectIdentifier ?nombreProyecto ?role
-      WHERE {
-        # Buscamos a la persona por nombre
-        ?persona foaf:name "${nombreAutor}" .
-  
-          # La persona está “assignedTo” un AssignedPerson, de ahí obtenemos proyecto y rol
-          ?persona swrcfe:assignedTo ?assigned .
-          ?assigned a swrcfe:AssignedPerson ;
-            swrcfe:project ?proyecto ;
-            swrcfe:role ?role .
-  
-        # Del proyecto sacamos su identificador y nombre
-        ?proyecto frapo:hasProjectIdentifier ?projectIdentifier ;
-                  foaf:name ?nombreProyecto .
-      }
-      ORDER BY ?nombreProyecto
+    PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+    PREFIX swrcfe: <http://www.morelab.deusto.es/ontologies/swrcfe#>
+    PREFIX frapo: <http://purl.org/cerif/frapo/>
+
+    SELECT ?projectIdentifier ?nombreProyecto ?role
+    WHERE {
+      # Buscamos a la persona por nombre
+      ?persona foaf:name "${nombreAutor}" .
+
+      # La persona está “assignedTo” un AssignedPerson, de ahí obtenemos proyecto y rol
+      ?persona swrcfe:assignedTo ?assigned .
+      ?assigned a swrcfe:AssignedPerson ;
+                swrcfe:project ?proyecto ;
+                swrcfe:role ?role .
+
+      # Del proyecto sacamos su identificador y nombre
+      ?proyecto frapo:hasProjectIdentifier ?projectIdentifier ;
+                foaf:name ?nombreProyecto .
+    }
+    ORDER BY ?nombreProyecto
   `;
 
-    const params = new HttpParams().set('query', query);
-    const headers = { Accept: 'application/sparql-results+json' };
-
-    return this.http.get(this.endpoint, { params, headers });
+    return this.postQuery(query);
   }
 }

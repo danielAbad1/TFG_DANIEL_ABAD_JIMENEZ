@@ -26,6 +26,24 @@
     <!-- Listado de publicaciones -->
     <ng-container *ngIf="publicacionesAgrupadas$ | async as publicacionesAgrupadas">
       <div *ngIf="publicacionesAgrupadas.length > 0; else noPublicaciones">
+        <div class="resumen-publicaciones" *ngIf="publicacionesAgrupadas.length > 0">
+          <p>
+            <fa-icon [icon]="['fas', 'book']"></fa-icon>
+            {{ totalPublicaciones }} {{ totalPublicaciones === 1 ? 'publicación' : 'publicaciones' }} en total.
+          </p>
+          <p *ngIf="filtroAnios !== 0">
+            {{ publicacionesFiltradas }} {{ publicacionesFiltradas === 1 ? 'publicación' : 'publicaciones' }}
+            <ng-container *ngIf="filtroAnios === 1">
+              en el año actual.
+            </ng-container>
+            <ng-container *ngIf="filtroAnios === -1">
+              en el último año.
+            </ng-container>
+            <ng-container *ngIf="filtroAnios > 1">
+              en los últimos {{ filtroAnios }} años.
+            </ng-container>
+          </p>
+        </div>
         <div *ngFor="let group of publicacionesAgrupadas">
           <h3>{{ group.year }}</h3>
           <ul>

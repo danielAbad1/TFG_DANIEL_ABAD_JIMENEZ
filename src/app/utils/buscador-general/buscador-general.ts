@@ -1,5 +1,3 @@
-// utils/buscador-formatters.ts
-
 import { InvestigadorBuscadorInterface } from '../../interfaces/buscador-general/investigadorBuscadorInterface';
 import { GrupoBuscadorInterface } from '../../interfaces/buscador-general/grupoBuscadorInterface';
 import { ProyectoBuscadorInterface } from '../../interfaces/buscador-general/proyectosBuscadorInterface';

@@ -135,3 +135,43 @@ h2 {
   text-decoration: underline;
   color: #0056b3;
 }
+
+.loading-investigador {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  background-color: #e9f7fe;
+  border: 1px solid #b6effe;
+  border-radius: 6px;
+  margin: 1rem 0;
+  color: #0c5460;
+}
+
+.spinner-icon {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+.badge-baja {
+  background-color: #dc3545;
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: bold;
+  border-radius: 0.25rem;
+  padding: 0.2rem 0.4rem;
+  margin-left: 0.5rem;
+  vertical-align: middle;
+}
+
+.badge-activo {
+  background-color: #28a745;
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: bold;
+  border-radius: 0.25rem;
+  padding: 0.2rem 0.4rem;
+  margin-left: 0.5rem;
+  vertical-align: middle;
+}

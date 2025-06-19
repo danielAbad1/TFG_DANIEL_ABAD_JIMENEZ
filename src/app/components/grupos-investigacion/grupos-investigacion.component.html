@@ -42,7 +42,9 @@
             <span class="field-label">Otros miembros:</span>
             <ul class="miembros-container">
               <li *ngFor="let persona of grupo.otrosMiembros; trackBy: trackByPersona">
-                {{ persona }}
+                <a (click)="verDetallesInvestigador(persona)" class="persona-link">
+                  {{ persona }}
+                </a>
               </li>
             </ul>
           </div>

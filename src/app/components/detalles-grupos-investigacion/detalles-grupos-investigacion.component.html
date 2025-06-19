@@ -11,27 +11,22 @@
         <p *ngIf="grupoDetalles[0]?.coordinadorNombre">
           <strong>Coordinador:</strong>
 
-          <!-- Si es de la Politécnica, lo pintamos como enlace clicable -->
-          <a *ngIf="grupoDetalles[0].coordinadorIsPolitecnica" class="coordinator-link clickable-person"
+          <a class="coordinator-link clickable-person"
             (click)="verDetallesInvestigador(grupoDetalles[0].coordinadorNombre!.value)">
             {{ grupoDetalles[0].coordinadorNombre!.value }}
           </a>
 
-          <!-- Si NO es de la Politécnica, solo mostramos el nombre en texto plano -->
-          <span *ngIf="!grupoDetalles[0].coordinadorIsPolitecnica" class="coordinator-link not-politecnica">
-            {{ grupoDetalles[0].coordinadorNombre!.value }}
-          </span>
-        </p>
 
         <p *ngIf="grupoDetalles[0]?.coordinador">
           <strong>Perfil del coordinador: </strong>
           <a [href]="grupoDetalles[0].coordinador?.value" target="_blank">{{ grupoDetalles[0].coordinador?.value }}</a>
         </p>
-        
+
         <p *ngIf="grupoDetalles[0]?.centroNombre || grupoDetalles[0]?.departamentoNombre">
           <strong>Sede Principal:</strong>
-          {{ grupoDetalles[0].centroNombre?.value || 'Centro no especificado' }} -
-          {{ grupoDetalles[0].departamentoNombre?.value || 'Departamento no especificado' }}
+          {{ grupoDetalles[0].departamentoNombre?.value || 'Departamento no especificado' }} -
+          {{ grupoDetalles[0].centroNombre?.value || 'Centro no especificado' }},
+          {{ grupoDetalles[0].campusCentro?.value || 'Campus no especificado' }}
         </p>
 
         <!-- Líneas de Investigación -->

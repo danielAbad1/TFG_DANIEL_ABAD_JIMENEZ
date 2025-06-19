@@ -8,4 +8,5 @@ export interface DetallesGruposInvestigacionInterface {
   description?: { value: string };
   departamentoNombre?: { value: string };
   centroNombre?: { value: string };
+  campusCentro?: { value: string };
 }

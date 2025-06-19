@@ -15,7 +15,6 @@ import {
   faSpinner,
 } from '@fortawesome/free-solid-svg-icons';
 
-// Interfaces tipadas para el buscador
 import { InvestigadorBuscadorInterface } from '../../interfaces/buscador-general/investigadorBuscadorInterface';
 import { GrupoBuscadorInterface } from '../../interfaces/buscador-general/grupoBuscadorInterface';
 import { PublicacionBuscadorInterface } from '../../interfaces/buscador-general/publicacionBuscadorInterface';
@@ -23,7 +22,6 @@ import { ProyectoBuscadorInterface } from '../../interfaces/buscador-general/pro
 
 import { normalizarTexto, paginar } from '../../utils/helpers';
 
-// Métodos de formateo
 import {
   formatearInvestigadores,
   formatearGrupos,
@@ -49,6 +47,7 @@ export class BuscadorGeneralComponent
 {
   terminoBusqueda: string = '';
   isLoading: boolean = false;
+  private datosCargados = false;
 
   // Subject para debouncing
   private terminoSubject = new Subject<string>();
@@ -142,6 +141,7 @@ export class BuscadorGeneralComponent
           inv.grupo = grupo.nombre;
         }
       }
+      this.datosCargados = true;
     } catch (error) {
       console.error(
         '❌ Error al cargar los datos del buscador general:',
@@ -164,63 +164,67 @@ export class BuscadorGeneralComponent
    * Ejecuta la lógica de búsqueda (mismo cuerpo que antes en buscar()).
    */
   private ejecutarBusqueda(termino: string): void {
-    const term = termino.toLowerCase().trim();
-    if (!term) {
-      this.limpiarResultados();
-      return;
+    try {
+      if (!this.datosCargados) return;
+
+      const term = termino.toLowerCase().trim();
+      if (!term) {
+        this.limpiarResultados();
+        return;
+      }
+
+      // 1. Buscar investigadores directos e indirectos
+      const investigadoresDirectos = this.filtrarPorTermino(
+        this.datos.investigadores,
+        ['nombre', 'areas', 'scopusId', 'orcidId', 'dialnetId'],
+        term
+      );
+
+      const gruposFiltrados = this.filtrarPorTermino(
+        this.datos.grupos,
+        ['nombre'],
+        term
+      );
+
+      const investigadoresIndirectos =
+        this.obtenerInvestigadoresDesdeGrupos(gruposFiltrados);
+
+      const investigadores = this.fusionarInvestigadores(
+        investigadoresDirectos,
+        investigadoresIndirectos
+      );
+      this.resultados.investigadores = investigadores;
+
+      // 2. Buscar grupos que tengan al menos un investigador filtrado
+      this.resultados.grupos = this.datos.grupos
+        .map((grupo) => {
+          const investigadoresCoinciden = grupo.investigadores.filter(
+            (nombre) => investigadores.some((inv) => inv.nombre === nombre)
+          );
+          return investigadoresCoinciden.length > 0
+            ? { nombre: grupo.nombre, investigadores: investigadoresCoinciden }
+            : null;
+        })
+        .filter(Boolean) as GrupoBuscadorInterface[];
+
+      // 3. Buscar proyectos y publicaciones
+      this.resultados.proyectos = this.filtrarPorTermino(
+        this.datos.proyectos,
+        ['nombre', 'ambito', 'tipo', 'id', 'subvencion'],
+        term
+      );
+
+      this.resultados.publicaciones = this.filtrarPorTermino(
+        this.datos.publicaciones,
+        ['titulo', 'tipo', 'year', 'eid', 'isbn', 'eissn', 'editorial'],
+        term
+      );
+
+      this.resetOffsets();
+      this.actualizarPaginacion();
+    } finally {
+      this.isLoading = false;
     }
-
-    // 1. Buscar investigadores directos e indirectos
-    const investigadoresDirectos = this.filtrarPorTermino(
-      this.datos.investigadores,
-      ['nombre', 'areas', 'scopusId', 'orcidId', 'dialnetId'],
-      term
-    );
-
-    const gruposFiltrados = this.filtrarPorTermino(
-      this.datos.grupos,
-      ['nombre'],
-      term
-    );
-
-    const investigadoresIndirectos =
-      this.obtenerInvestigadoresDesdeGrupos(gruposFiltrados);
-
-    const investigadores = this.fusionarInvestigadores(
-      investigadoresDirectos,
-      investigadoresIndirectos
-    );
-    this.resultados.investigadores = investigadores;
-
-    // 2. Buscar grupos que tengan al menos un investigador filtrado
-    this.resultados.grupos = this.datos.grupos
-      .map((grupo) => {
-        const investigadoresCoinciden = grupo.investigadores.filter((nombre) =>
-          investigadores.some((inv) => inv.nombre === nombre)
-        );
-        return investigadoresCoinciden.length > 0
-          ? { nombre: grupo.nombre, investigadores: investigadoresCoinciden }
-          : null;
-      })
-      .filter(Boolean) as GrupoBuscadorInterface[];
-
-    // 3. Buscar proyectos y publicaciones
-    this.resultados.proyectos = this.filtrarPorTermino(
-      this.datos.proyectos,
-      ['nombre', 'ambito', 'tipo', 'id', 'subvencion'],
-      term
-    );
-
-    this.resultados.publicaciones = this.filtrarPorTermino(
-      this.datos.publicaciones,
-      ['titulo', 'tipo', 'year', 'eid', 'isbn', 'eissn', 'editorial'],
-      term
-    );
-
-    this.resetOffsets();
-    this.actualizarPaginacion();
-
-    this.isLoading = false;
   }
 
   private obtenerInvestigadoresDesdeGrupos(

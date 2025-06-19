@@ -21,13 +21,9 @@
           <ul class="authors-list">
             <li *ngFor="let autor of publicacion.autoresExtended">
               <!-- Solo enlace si pertenece a la Politécnica -->
-              <a *ngIf="autor.isPolitecnica" class="author-link clickable-person"
-                (click)="verDetallesInvestigador(autor.name)">
+              <a class="author-link clickable-person" (click)="verDetallesInvestigador(autor.name)">
                 {{ autor.name }}
               </a>
-              <span *ngIf="!autor.isPolitecnica" class="author-plain">
-                {{ autor.name }}
-              </span>
             </li>
           </ul>
         </ng-container>

@@ -46,7 +46,10 @@
     </tbody>
   </table>
 
-  <div *ngIf="isLoading && !errorMessage" class="spinner">Cargando...</div>
+  <div *ngIf="isLoading && !errorMessage" class="loading-listadoInvestigadores">
+    <fa-icon [icon]="['fas', 'spinner']" class="fa-spin spinner-icon"></fa-icon>
+    <p>Cargando lista de investigadores...</p>
+  </div>
 
   <div class="pagination">
     <button (click)="paginate('previous')" [disabled]="offset === 0 || isLoading">

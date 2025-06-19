@@ -18,7 +18,7 @@ export function getAreas(areas: string | undefined): string[] {
  * @returns Un array de grupos o un array vacío si no hay grupos.
  */
 export function getGruposInvestigacion(grupos: string | undefined): string[] {
-  return grupos ? [grupos.trim()] : [];
+  return grupos ? grupos.split(';').map((g) => g.trim()) : [];
 }
 
 /**

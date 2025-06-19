@@ -215,6 +215,32 @@
   margin-bottom: 1rem;
 }
 
+.resumen-publicaciones {
+  background-color: #f1f5ff;
+  border: 1px solid #cfe2ff;
+  border-radius: 6px;
+  padding: 15px 20px;
+  margin: 10px auto 25px;
+  text-align: center;
+  color: #0d3c84;
+  font-size: 16px;
+  box-shadow: 0 1px 3px rgba(13, 60, 132, 0.1);
+  border-bottom: 2px solid #cfe2ff;
+  margin-bottom: 20px;
+}
+
+.resumen-publicaciones p {
+  margin: 5px 0;
+  font-weight: 500;
+}
+
+.resumen-publicaciones fa-icon {
+  color: #007bff;
+  margin-right: 8px;
+  font-size: 1.2rem;
+  vertical-align: middle;
+}
+
 /* ===========================
    Responsive
    =========================== */

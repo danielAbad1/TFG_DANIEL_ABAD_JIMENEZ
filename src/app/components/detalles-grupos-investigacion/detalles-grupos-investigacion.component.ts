@@ -1,8 +1,6 @@
-// src/app/components/detalles-grupos-investigacion/detalles-grupos-investigacion.component.ts
-
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { Title } from '@angular/platform-browser'; // ← Importamos Title
+import { Title } from '@angular/platform-browser';
 import { SparqlService } from '../../services/sparql/sparql.service';
 import { CommonModule } from '@angular/common';
 import { DetallesGruposInvestigacionInterface } from '../../interfaces/detallesGrupoInvestigacionInterface';

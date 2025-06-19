@@ -97,6 +97,12 @@ export class DetallesProyectosInvestigacionComponent
       switchMap((politecnicaSet: Set<string>) =>
         this.sparqlService.getDetallesProyecto(proyectoId).pipe(
           map((data) => {
+            console.log('[DEBUG] Resultado detalles proyecto:', data);
+            
+            if (!data?.results?.bindings) {
+              throw new Error('Formato inesperado en la respuesta SPARQL');
+            }
+
             const groupedData = groupProjectPersons(data.results.bindings);
             if (groupedData.length === 0) {
               return null;
@@ -133,7 +139,7 @@ export class DetallesProyectosInvestigacionComponent
                 ({
                   ...person,
                   isPolitecnica: politecnicaSet.has(
-                    person.personalName.trim().toLowerCase()
+                    (person.personalName || '').trim().toLowerCase()
                   ),
                 } as AssignedPersonExtended)
             );

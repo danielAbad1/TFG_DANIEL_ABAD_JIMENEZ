@@ -13,7 +13,13 @@ import {
   FaIconLibrary,
   FontAwesomeModule,
 } from '@fortawesome/angular-fontawesome';
-import { faArrowLeft, faDownload, faHome, faSpinner } from '@fortawesome/free-solid-svg-icons';
+import {
+  faArrowLeft,
+  faDownload,
+  faHome,
+  faSpinner,
+  faBook,
+} from '@fortawesome/free-solid-svg-icons';
 import {
   GrupoPublicacionesAutorInterface,
   PublicacionAutorInterface,
@@ -56,6 +62,9 @@ export class PublicacionesAutorComponent
     { label: 'Últimos 20 años', value: 20 },
   ];
 
+  totalPublicaciones = 0;
+  publicacionesFiltradas = 0;
+
   constructor(
     private sparqlService: SparqlService,
     private route: ActivatedRoute,
@@ -64,7 +73,7 @@ export class PublicacionesAutorComponent
     private library: FaIconLibrary
   ) {
     super(navigationService);
-    library.addIcons(faArrowLeft, faDownload, faHome, faSpinner);
+    library.addIcons(faArrowLeft, faDownload, faHome, faSpinner, faBook);
   }
 
   override ngOnInit(): void {
@@ -93,8 +102,19 @@ export class PublicacionesAutorComponent
           this.tienePublicaciones = publicacionesAgrupadas.length > 0;
 
           console.log('🔄 Datos agrupados por año:', publicacionesAgrupadas);
+
           const filtradas = this.filtrarPublicacionesPorAnio(
             publicacionesAgrupadas
+          );
+
+          this.totalPublicaciones = publicacionesAgrupadas.reduce(
+            (acc, grupoAnual) => acc + grupoAnual.publicaciones.length,
+            0
+          );
+
+          this.publicacionesFiltradas = filtradas.reduce(
+            (acc, grupoAnual) => acc + grupoAnual.publicaciones.length,
+            0
           );
 
           this.publicacionesAgrupadas = filtradas;
